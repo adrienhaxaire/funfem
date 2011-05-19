@@ -1,3 +1,0 @@
-{"nodes": {"coordinates":[0,0],"number":1},
-"elements": {"nodes":[1],"number":1},
-"materials": {"name":"steel", "properties":[{"name":"Poisson", "value":0.3},{"name":"Young", "value":4000}], "number":1}}
