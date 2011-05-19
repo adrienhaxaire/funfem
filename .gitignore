@@ -1,0 +1,11 @@
+# Temporary files
+*~
+*#
+*.json
+
+# Generated
+.o
+.hi
+
+# haddock
+doc/
