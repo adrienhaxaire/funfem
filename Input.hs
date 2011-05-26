@@ -18,6 +18,7 @@ module Input where
 import Text.JSON
 import Elements
 
+
 data Input = Input [Node] [Element] [Material]
              deriving (Eq, Ord, Show)
 
@@ -26,12 +27,11 @@ instance JSON Input where
     obj <- readJSON object
     nodes <- valFromObj "nodes" obj
     elements <- valFromObj "elements" obj
-    materials <- valFromObj "materials" obj            
+    materials <- valFromObj "materials" obj
     return (Input nodes elements materials)
   showJSON (Input nodes elements materials) = makeObj [("nodes", showJSON nodes)
                                                       ,("elements", showJSON elements)
                                                       ,("materials", showJSON materials)]
-                                              
                                               
 getNodes :: Input -> [Node]                                              
 getNodes (Input nodes _ _) = nodes
@@ -39,10 +39,8 @@ getNodes (Input nodes _ _) = nodes
 getElements :: Input -> [Element]
 getElements (Input _ elements _) = elements 
 
-
-
 inputFromResult :: Result Input -> Input
 inputFromResult (Ok input) = input
-inputFromResult (Error _) = (Input [] [] [])
+inputFromResult (Error _) = Input [] [] []
 
 -- TODO: add materials and boundary conditions
