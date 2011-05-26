@@ -7,5 +7,6 @@
 .o
 .hi
 
-# haddock
+# haddock, hlint
 doc/
+report.html
