@@ -19,8 +19,8 @@ import Text.JSON
 
 type Coordinates = (Double, Double)
 type Number = Int
-type Type = String
-
+type Name = String
+type Value = Double
 
 -- Nodes
 data Node = Node Coordinates Number
@@ -64,8 +64,6 @@ instance JSON Element where
 
 
 -- Materials
-type Name = String
-type Value = Double
 
 -- | Property data type to simplify creation of a Material data type
 data Property = Property Name Value
@@ -103,4 +101,21 @@ getMaterialProperties (Material _ properties _) = properties
 getMaterialNumber :: Material -> Number
 getMaterialNumber (Material _ _ number) = number
 
+-- Boundary conditions
+-- | [Number] is the list of nodes affected by the boundary conditions
+-- i.e. no Neumann BC handled yet
 
+data BoundaryCondition = BoundaryCondition Name [Number] Value
+                         deriving (Eq, Ord, Show)
+                                  
+instance JSON BoundaryCondition where
+  readJSON object = do
+    obj <- readJSON object
+    name <- valFromObj "name" obj
+    nodes <- valFromObj "nodes" obj
+    value <- valFromObj "value" obj
+    return (BoundaryCondition name nodes value)
+  showJSON (BoundaryCondition name nodes value) = makeObj [("name", showJSON name)
+                                                          ,("nodes", showJSON nodes)
+                                                          ,("value", showJSON value)]
+-- TODO: write accessors                                  

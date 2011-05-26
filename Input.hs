@@ -19,7 +19,7 @@ import Text.JSON
 import Elements
 
 
-data Input = Input [Node] [Element] [Material]
+data Input = Input [Node] [Element] [Material] [BoundaryCondition]
              deriving (Eq, Ord, Show)
 
 instance JSON Input where
@@ -28,19 +28,19 @@ instance JSON Input where
     nodes <- valFromObj "nodes" obj
     elements <- valFromObj "elements" obj
     materials <- valFromObj "materials" obj
-    return (Input nodes elements materials)
-  showJSON (Input nodes elements materials) = makeObj [("nodes", showJSON nodes)
+    bcs <- valFromObj "boundaries" obj
+    return (Input nodes elements materials bcs)
+  showJSON (Input nodes elements materials bcs) = makeObj [("nodes", showJSON nodes)
                                                       ,("elements", showJSON elements)
-                                                      ,("materials", showJSON materials)]
+                                                      ,("materials", showJSON materials)
+                                                      ,("boundariess", showJSON bcs)]
                                               
 getNodes :: Input -> [Node]                                              
-getNodes (Input nodes _ _) = nodes
+getNodes (Input nodes _ _ _) = nodes
 
 getElements :: Input -> [Element]
-getElements (Input _ elements _) = elements 
+getElements (Input _ elements _ _) = elements 
 
 inputFromResult :: Result Input -> Input
 inputFromResult (Ok input) = input
-inputFromResult (Error _) = Input [] [] []
-
--- TODO: add materials and boundary conditions
+inputFromResult (Error _) = Input [] [] [] []
