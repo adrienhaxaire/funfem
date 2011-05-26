@@ -13,4 +13,4 @@ FunFEM is a finite element method (to be) written with the functional language H
 
 The idea is for me to learn a functional language and thinking in terms of functional programming. I saw no FEM library, and I thought that it would be nice to add my stone to the community.
 
-Feel free to contact me at adrien [at] adrienhaxaire [dot] org for more information about this project. Any contribution welcome !
+Feel free to contact me at adrien [at] funfem [dot] org for more information about this project. Any contribution welcome !
