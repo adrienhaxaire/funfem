@@ -118,4 +118,11 @@ instance JSON BoundaryCondition where
   showJSON (BoundaryCondition name nodes value) = makeObj [("name", showJSON name)
                                                           ,("nodes", showJSON nodes)
                                                           ,("value", showJSON value)]
--- TODO: write accessors                                  
+getBCName :: BoundaryCondition -> Name
+getBCName (BoundaryCondition name _ _) = name
+
+getBCNodes :: BoundaryCondition -> [Number]
+getBCNodes (BoundaryCondition _ numbers _) = numbers
+
+getBCValue :: BoundaryCondition -> Value
+getBCValue (BoundaryCondition _ _ value) = value
