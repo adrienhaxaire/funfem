@@ -33,13 +33,19 @@ instance JSON Input where
   showJSON (Input nodes elements materials bcs) = makeObj [("nodes", showJSON nodes)
                                                       ,("elements", showJSON elements)
                                                       ,("materials", showJSON materials)
-                                                      ,("boundariess", showJSON bcs)]
+                                                      ,("boundaries", showJSON bcs)]
                                               
 getNodes :: Input -> [Node]                                              
 getNodes (Input nodes _ _ _) = nodes
 
 getElements :: Input -> [Element]
 getElements (Input _ elements _ _) = elements 
+
+getMaterials :: Input -> [Material]
+getMaterials (Input _  _ materials _) = materials 
+
+getBCs :: Input -> [BoundaryCondition]
+getBCs (Input _ _ _ bcs) = bcs 
 
 inputFromResult :: Result Input -> Input
 inputFromResult (Ok input) = input
