@@ -33,10 +33,10 @@ cg' :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
 cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p' 
   where 
     alpha' = alpha r z p a
-    beta'  = beta z' r' z r
-    r' = r + R.map (*alpha') (a `multiplyMV` p)
-    z' = r' 
+    beta' = beta z' r' z r
     x' = x + R.map (*alpha') p 
+    r' = r - R.map (*alpha') (a `multiplyMV` p)
+    z' = r' 
     p' = z'+ R.map (*beta') p 
 
 
