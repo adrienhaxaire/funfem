@@ -32,18 +32,22 @@ cg a b = if r0 <= eps then x else cg' a x r0
 
 cg' :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
  
+-}  
   
-  
-residue :: Array DIM1 Double -> Array DIM2 Double -> Array DIM1 Double -> Double
+--residue :: Array DIM1 Double -> Array DIM2 Double -> Array DIM1 Double -> Double
+--residue b a x = norm (b - a `multiplyMV` x)
 
--}
 
 norm :: Array DIM1 Double -> Double
-norm a = sqrt (a' ! Z)
-  where a' = R.sum $ R.map (**2) a
+norm  = sqrt . toScalar . R.sum . R.map (**2) 
+
+--multiplyMV :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
+--multiplyMV a x = 
+--  where sl = (Z:.(row::Int):.All)  
+        
 
 
-
+-- slice a sl
 
 {-
 x0 = 0 (or better)
