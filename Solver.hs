@@ -17,9 +17,6 @@ module Solver where
 
 import Data.Array.Repa as R
 
--- let a = fromList (Z :. (2::Int) :. (2::Int)) [4,1,1,3]
--- let b = fromList (Z :. (2::Int)) [1,2]
-
 eps :: Double
 eps = 1.0e-3
 
@@ -34,20 +31,18 @@ cg' :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
  
 -}  
   
---residue :: Array DIM1 Double -> Array DIM2 Double -> Array DIM1 Double -> Double
---residue b a x = norm (b - a `multiplyMV` x)
+residue :: Array DIM1 Double -> Array DIM2 Double -> Array DIM1 Double -> Double
+residue b a x = norm (b - a `multiplyMV` x)
 
 
 norm :: Array DIM1 Double -> Double
 norm  = sqrt . toScalar . R.sum . R.map (**2) 
 
---multiplyMV :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
---multiplyMV a x = 
---  where sl = (Z:.(row::Int):.All)  
-        
+multiplyMV :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
+multiplyMV a x = R.sum $ a*x'
+  where x' = extend (Z:.(dim::Int):.All) x
+        dim = rank $ extent a
 
-
--- slice a sl
 
 {-
 x0 = 0 (or better)
