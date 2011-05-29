@@ -31,13 +31,15 @@ cg' :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
  
 -}  
   
+-- | Residue needed to check the exit of the CG.
 residue :: Array DIM1 Double -> Array DIM2 Double -> Array DIM1 Double -> Double
 residue b a x = norm (b - a `multiplyMV` x)
-
 
 norm :: Array DIM1 Double -> Double
 norm  = sqrt . toScalar . R.sum . R.map (**2) 
 
+
+-- | Didn't find it in the repa lib. Computes matrix * vector.
 multiplyMV :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
 multiplyMV a x = R.sum $ a*x'
   where x' = extend (Z:.(dim::Int):.All) x
