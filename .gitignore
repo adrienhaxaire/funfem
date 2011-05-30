@@ -4,8 +4,8 @@
 *.json
 
 # Generated
-.o
-.hi
+*.o
+*.hi
 
 # haddock, hlint
 doc/
