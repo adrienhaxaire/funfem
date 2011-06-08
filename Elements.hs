@@ -26,11 +26,11 @@ type Value = Double
 data Node = Node Coordinates Number
           deriving (Eq, Ord, Show)
 
-getNodeNumber :: Node -> Number
-getNodeNumber (Node _ number) = number
+nodeNumber :: Node -> Number
+nodeNumber (Node _ number) = number
 
-getNodeCoordinates :: Node -> Coordinates
-getNodeCoordinates (Node coordinates _ ) = coordinates 
+nodeCoordinates :: Node -> Coordinates
+nodeCoordinates (Node coordinates _ ) = coordinates 
 
 instance JSON Node where
   readJSON object = do 
@@ -47,14 +47,14 @@ instance JSON Node where
 data Element = Element [Number] Number Name
              deriving (Eq, Ord, Show)
 
-getElementNodes :: Element -> [Number]
-getElementNodes (Element nodes _ _) = nodes
+elemNodes :: Element -> [Number]
+elemNodes (Element nodes _ _) = nodes
 
-getElementNumber :: Element -> Number
-getElementNumber (Element _ number _) = number
+elemNumber :: Element -> Number
+elemNumber (Element _ number _) = number
 
-getElementMaterial :: Element -> Name
-getElementMaterial (Element _ _ name) = name
+elemMaterial :: Element -> Name
+elemMaterial (Element _ _ name) = name
 
 
 instance JSON Element where
@@ -84,11 +84,11 @@ instance JSON Property where
   showJSON (Property name value) = makeObj [("name", showJSON name)
                                             ,("value", showJSON value)]
 
-getPropertyValue :: Property -> Value
-getPropertyValue (Property _ value) = value
+propValue :: Property -> Value
+propValue (Property _ value) = value
 
-getPropertyName :: Property -> Name
-getPropertyName (Property name _) = name
+propName :: Property -> Name
+propName (Property name _) = name
 
 
 data Material = Material Name [Property] Number
@@ -105,20 +105,20 @@ instance JSON Material where
                                                        ,("properties", showJSON properties)
                                                        ,("number", showJSON number)]
 
-getMaterialName :: Material -> Name
-getMaterialName (Material name _ _) = name
+matName :: Material -> Name
+matName (Material name _ _) = name
 
-getMaterialProperties :: Material -> [Property]
-getMaterialProperties (Material _ properties _) = properties
+matProperties :: Material -> [Property]
+matProperties (Material _ properties _) = properties
 
-getMaterialNumber :: Material -> Number
-getMaterialNumber (Material _ _ number) = number
+matNumber :: Material -> Number
+matNumber (Material _ _ number) = number
 
-getMaterialFromName :: Name -> [Material] -> Material
-getMaterialFromName _ [] = Material "Null" [] 0
-getMaterialFromName n (m:ms) = if (getMaterialName m == n) 
+matFromName :: Name -> [Material] -> Material
+matFromName _ [] = Material "Null" [] 0
+matFromName n (m:ms) = if (matName m == n) 
                                then m
-                               else getMaterialFromName n ms
+                               else matFromName n ms
 
 -- Boundary conditions
 -- | [Number] is the list of nodes affected by the boundary conditions
@@ -137,11 +137,11 @@ instance JSON BoundaryCondition where
   showJSON (BoundaryCondition name nodes value) = makeObj [("name", showJSON name)
                                                           ,("nodes", showJSON nodes)
                                                           ,("value", showJSON value)]
-getBCName :: BoundaryCondition -> Name
-getBCName (BoundaryCondition name _ _) = name
+bcName :: BoundaryCondition -> Name
+bcName (BoundaryCondition name _ _) = name
 
-getBCNodes :: BoundaryCondition -> [Number]
-getBCNodes (BoundaryCondition _ numbers _) = numbers
+bcNodes :: BoundaryCondition -> [Number]
+bcNodes (BoundaryCondition _ numbers _) = numbers
 
-getBCValue :: BoundaryCondition -> Value
-getBCValue (BoundaryCondition _ _ value) = value
+bcValue :: BoundaryCondition -> Value
+bcValue (BoundaryCondition _ _ value) = value
