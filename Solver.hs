@@ -10,19 +10,15 @@
 --
 ----------------------------------------------------------------------------------
 --
--- Conjugate Gradient solver
---
 
-module Solver 
-       (
-       cg
-       )where
+module Solver (cg) where
 
 import Data.Array.Repa as R
 
 eps :: Double
 eps = 1.0e-3
 
+-- | Conjugate Gradient solver. Solves the system A*x = b
 cg :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double 
       -> Array DIM1 Double
 {-# INLINE cg #-}

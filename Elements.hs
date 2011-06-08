@@ -42,15 +42,19 @@ instance JSON Node where
                                           ,("number", showJSON number)]
 
 -- Elements
--- | [Number] is the list of Node numbers
-data Element = Element [Number] Number
+-- | [Number] is the list of Node numbers, Number is the Element number and  
+-- Name refers to the name of the Element material
+data Element = Element [Number] Number Name
              deriving (Eq, Ord, Show)
 
 getElementNodes :: Element -> [Number]
-getElementNodes (Element nodes _) = nodes
+getElementNodes (Element nodes _ _) = nodes
 
 getElementNumber :: Element -> Number
-getElementNumber (Element _ number) = number
+getElementNumber (Element _ number _) = number
+
+getElementMaterial :: Element -> Name
+getElementMaterial (Element _ _ name) = name
 
 
 instance JSON Element where
@@ -58,9 +62,11 @@ instance JSON Element where
     obj <- readJSON object
     nodes <- valFromObj "nodes" obj
     number <- valFromObj "number" obj
-    return (Element nodes number)
-  showJSON (Element nodes number) = makeObj [("nodes", showJSON nodes)
-                                            ,("number", showJSON number)]
+    material <- valFromObj "material" obj
+    return (Element nodes number material)
+  showJSON (Element nodes number material) = makeObj [("nodes", showJSON nodes)
+                                            ,("number", showJSON number)
+                                            ,("material", showJSON material)]
 
 
 -- Materials
@@ -77,6 +83,13 @@ instance JSON Property where
     return (Property name value)
   showJSON (Property name value) = makeObj [("name", showJSON name)
                                             ,("value", showJSON value)]
+
+getPropertyValue :: Property -> Value
+getPropertyValue (Property _ value) = value
+
+getPropertyName :: Property -> Name
+getPropertyName (Property name _) = name
+
 
 data Material = Material Name [Property] Number
               deriving (Eq, Ord, Show)
@@ -100,6 +113,12 @@ getMaterialProperties (Material _ properties _) = properties
 
 getMaterialNumber :: Material -> Number
 getMaterialNumber (Material _ _ number) = number
+
+getMaterialFromName :: Name -> [Material] -> Material
+getMaterialFromName _ [] = Material "Null" [] 0
+getMaterialFromName n (m:ms) = if (getMaterialName m == n) 
+                               then m
+                               else getMaterialFromName n ms
 
 -- Boundary conditions
 -- | [Number] is the list of nodes affected by the boundary conditions
