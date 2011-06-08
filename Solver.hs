@@ -13,7 +13,10 @@
 -- Conjugate Gradient solver
 --
 
-module Solver where
+module Solver 
+       (
+       cg
+       )where
 
 import Data.Array.Repa as R
 
