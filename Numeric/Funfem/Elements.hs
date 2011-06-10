@@ -11,7 +11,7 @@
 --
 -- Defines Node, Element and Material data
 
-module Elements where
+module Numeric.Funfem.Elements where
 
 import Text.JSON
 

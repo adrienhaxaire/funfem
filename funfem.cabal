@@ -1,23 +1,31 @@
-name:               funfem
-version:            0.1.0
-synopsis:           FEM library
-description:
+Name:               funfem
+Version:            0.1.0
+Synopsis:           FEM library
+Description:
     The Finite Element Method (FEM) is a numerical approach for solving
     concrete physical problems by dividing the studied domain into
     elements in which the equations describing the problem can be solved.
     .
     This library provides usual tools for FEM: elements, solver, etc.
-category:           Numeric
-license:            BSD3
-license-file:       LICENSE
-author:             Adrien Haxaire
-maintainer:         Adrien Haxaire <adrien@funfem.org>
+Category:           Numeric
+Stability:          experimental       
+License:            BSD3
+License-file:       LICENSE
+Author:             Adrien Haxaire
+Maintainer:         Adrien Haxaire <adrien@funfem.org>
 Copyright:          (c) 2011 Adrien Haxaire
+Build-Type:         Simple
 cabal-version:      >= 1.2.0
 library
-  exposed-modules: Numeric.Funfem,
+  build-depends:   
+                   base == 4.*,
+                   repa >= 2.0.0.3,
+                   json >= 0.4.4
+
+  exposed-modules: 
+                   Numeric.Funfem,
                    Numeric.Funfem.Elements,
                    Numeric.Funfem.Solver,
-                   Numeric.Funfem.Hydraulics,
                    Numeric.Funfem.Input
-  ghc-options:     -Wall -O2 -cpp
+
+  ghc-options:     -Wall

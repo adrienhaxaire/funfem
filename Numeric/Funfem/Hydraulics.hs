@@ -17,11 +17,12 @@
 --
 --
 
-module Hydraulics where
+module Numeric.Funfem.Hydraulics where
 
 import Data.Array.Repa as R
 import Elements
 
+{-
 -- | Creates the elementary stiffness matrix
 elementStiffness :: Element -> Material -> Array DIM2 Double
 elementStiffness el mat = R.map (*permeability') (bc el)
@@ -34,3 +35,4 @@ permeabilty mat = getPropertyValue property
 det :: 
 
 bc :: 
+-}

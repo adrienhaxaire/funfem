@@ -11,7 +11,7 @@
 ----------------------------------------------------------------------------------
 --
 
-module Solver (cg) where
+module Numeric.Funfem.Solver (cg) where
 
 import Data.Array.Repa as R
 

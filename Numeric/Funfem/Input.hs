@@ -13,10 +13,10 @@
 -- Reads JSON formatted input data
 --
 
-module Input where
+module Numeric.Funfem.Input where
 
 import Text.JSON
-import Elements
+import Numeric.Funfem.Elements
 
 
 data Input = Input [Node] [Element] [Material] [BoundaryCondition]
@@ -34,18 +34,6 @@ instance JSON Input where
                                                       ,("elements", showJSON elements)
                                                       ,("materials", showJSON materials)
                                                       ,("boundaries", showJSON bcs)]
-                                              
-nodes :: Input -> [Node]                                              
-nodes (Input nodes _ _ _) = nodes
-
-elements :: Input -> [Element]
-elements (Input _ elements _ _) = elements 
-
-materials :: Input -> [Material]
-materials (Input _  _ materials _) = materials 
-
-bcs :: Input -> [BoundaryCondition]
-bcs (Input _ _ _ bcs) = bcs 
 
 inputFromResult :: Result Input -> Input
 inputFromResult (Ok input) = input
