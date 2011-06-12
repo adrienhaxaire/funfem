@@ -26,6 +26,8 @@ library
                    Numeric.Funfem,
                    Numeric.Funfem.Elements,
                    Numeric.Funfem.Solver,
-                   Numeric.Funfem.Input
+                   Numeric.Funfem.Stiffnesses,
+                   Numeric.Funfem.Input,
+                   Numeric.Funfem.Hydraulics,
 
   ghc-options:     -Wall
