@@ -28,7 +28,7 @@ import Numeric.Funfem.Stiffnesses
 hydraulicStiffness :: Element -> Material -> Array DIM2 Double
 hydraulicStiffness el mat = M.multiplyMM bt (M.multiplyMM k b)
   where 
-    b = differenciate el
+    b = differentiate el
     bt = R.transpose b
     k = R.map (*(permeability mat)) $ fromList (Z:.(2::Int):.(2::Int)) [1,0,0,1]
         

@@ -13,15 +13,15 @@
 -- Functions to create theelement stiffness matrices and the global stiffness matrix
 --
 module Numeric.Funfem.Stiffnesses (
-       differenciate
+       differentiate
        ) where
 
 import Data.Array.Repa as R
 import Numeric.Funfem.Elements
 
 -- | Differenciation matrix, usually noted B
-differenciate :: Element -> Array DIM2 Double
-differenciate el = fromList (Z:.(2::Int):.(3::Int)) (Prelude.map (/area') b13c13')
+differentiate :: Element -> Array DIM2 Double
+differentiate el = fromList (Z:.(2::Int):.(3::Int)) (Prelude.map (/area') b13c13')
   where 
     b13c13' = b13c13 el
     area' = area el
