@@ -128,7 +128,7 @@ matPropertyFromName mat name = propValue $ head property
 -- | [Number] is the list of nodes affected by the boundary conditions,
 -- i.e. no Neumann BC handled yet
 
-data BoundaryCondition = BoundaryCondition Name [Number] Value
+data BoundaryCondition = BoundaryCondition Name [Node] Value
                          deriving (Eq, Ord, Show)
                                   
 instance JSON BoundaryCondition where
@@ -144,8 +144,8 @@ instance JSON BoundaryCondition where
 bcName :: BoundaryCondition -> Name
 bcName (BoundaryCondition name _ _) = name
 
-bcNodes :: BoundaryCondition -> [Number]
-bcNodes (BoundaryCondition _ numbers _) = numbers
+bcNodes :: BoundaryCondition -> [Node]
+bcNodes (BoundaryCondition _ nodes _) = nodes
 
 bcValue :: BoundaryCondition -> Value
 bcValue (BoundaryCondition _ _ value) = value
