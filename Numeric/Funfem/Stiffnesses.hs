@@ -12,7 +12,9 @@
 --
 -- Functions to create theelement stiffness matrices and the global stiffness matrix
 --
-module Numeric.Funfem.Stiffnesses where
+module Numeric.Funfem.Stiffnesses (
+       differenciate
+       ) where
 
 import Data.Array.Repa as R
 import Numeric.Funfem.Elements

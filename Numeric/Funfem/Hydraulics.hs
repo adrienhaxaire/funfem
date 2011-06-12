@@ -20,19 +20,18 @@
 module Numeric.Funfem.Hydraulics where
 
 import Data.Array.Repa as R
-import Elements
+import Data.Array.Repa.Algorithms.Matrix as M
+import Numeric.Funfem.Elements
+import Numeric.Funfem.Stiffnesses
 
-{-
 -- | Creates the elementary stiffness matrix
 elementStiffness :: Element -> Material -> Array DIM2 Double
-elementStiffness el mat = R.map (*permeability') (bc el)
-  where permeabilty' = (permeabilty mat) / (4.0 * (det ))
+elementStiffness el mat = M.multiplyMM bt (M.multiplyMM k b)
+  where 
+    b = differenciate el
+    bt = R.transpose b
+    k = R.map (*(permeability mat)) $ fromList (Z:.(2::Int):.(2::Int)) [1,0,0,1]
         
-permeabilty :: Material -> Double
-permeabilty mat = getPropertyValue property
-  where property = filter (\n -> (getPropertyName n) == "permeabilty") (getMaterialProperties mat)
-
-det :: 
-
-bc :: 
--}
+permeability :: Material -> Double
+permeability mat = propValue $ head property
+  where property = filter (\n -> (propName n) == "permeabilty") (matProperties mat)

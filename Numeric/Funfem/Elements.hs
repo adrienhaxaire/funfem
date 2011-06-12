@@ -42,10 +42,10 @@ instance JSON Node where
 -- Elements
 -- | Needs a list of Node numbers, the Element number and 
 -- the name of the Element material
-data Element = Element [Number] Number Name
+data Element = Element [Node] Number Name
              deriving (Eq, Ord, Show)
 
-elemNodes :: Element -> [Number]
+elemNodes :: Element -> [Node]
 elemNodes (Element nodes _ _) = nodes
 
 elemNumber :: Element -> Number
