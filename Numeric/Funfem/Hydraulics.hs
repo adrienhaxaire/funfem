@@ -24,14 +24,13 @@ import Data.Array.Repa.Algorithms.Matrix as M
 import Numeric.Funfem.Elements
 import Numeric.Funfem.Stiffnesses
 
--- | Creates the elementary stiffness matrix
-elementStiffness :: Element -> Material -> Array DIM2 Double
-elementStiffness el mat = M.multiplyMM bt (M.multiplyMM k b)
+-- | Creates the elementary stiffness matrix for hydraulics
+hydraulicStiffness :: Element -> Material -> Array DIM2 Double
+hydraulicStiffness el mat = M.multiplyMM bt (M.multiplyMM k b)
   where 
     b = differenciate el
     bt = R.transpose b
     k = R.map (*(permeability mat)) $ fromList (Z:.(2::Int):.(2::Int)) [1,0,0,1]
         
 permeability :: Material -> Double
-permeability mat = propValue $ head property
-  where property = filter (\n -> (propName n) == "permeabilty") (matProperties mat)
+permeability mat = matPropertyFromName mat "permeability"

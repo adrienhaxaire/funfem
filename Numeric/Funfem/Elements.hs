@@ -117,6 +117,13 @@ matFromName n (m:ms) = if (matName m == n)
                                then m
                                else matFromName n ms
 
+matPropertyFromName :: Material -> String -> Double
+matPropertyFromName mat name = propValue $ head property
+  where property = filter (\n -> (propName n) == name) (matProperties mat)
+
+
+
+
 -- Boundary conditions
 -- | [Number] is the list of nodes affected by the boundary conditions,
 -- i.e. no Neumann BC handled yet
