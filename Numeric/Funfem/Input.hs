@@ -35,6 +35,21 @@ instance JSON Input where
                                                       ,("materials", showJSON materials)
                                                       ,("boundaries", showJSON bcs)]
 
+inputFromString :: String -> Input
+inputFromString s = inputFromResult (decode s :: Result Input)
+
 inputFromResult :: Result Input -> Input
 inputFromResult (Ok input) = input
 inputFromResult (Error _) = Input [] [] [] []
+
+nodesFromInput :: Input -> [Node]
+nodesFromInput (Input ns _ _ _) = ns
+
+elementsFromInput :: Input -> [Element]
+elementsFromInput (Input _ els _ _) = els
+
+materialsFromInput :: Input -> [Material]
+materialsFromInput (Input _ _ mats _) = mats
+
+boundariesFromInput :: Input -> [BoundaryCondition]
+boundariesFromInput (Input _ _ _ bcs) = bcs
