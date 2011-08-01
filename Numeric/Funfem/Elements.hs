@@ -14,7 +14,6 @@
 module Numeric.Funfem.Elements where
 
 import Text.JSON
-
 type Coordinates = (Double, Double)
 type Number = Int
 type Name = String
@@ -42,7 +41,7 @@ instance JSON Node where
 -- Elements
 -- | Needs a list of Node numbers, the Element number and 
 -- the name of the Element material
-data Element = Element [Node] Number Name
+data Element = Element [Node] Number Material
              deriving (Eq, Ord, Show)
 
 elemNodes :: Element -> [Node]
@@ -51,8 +50,8 @@ elemNodes (Element nodes _ _) = nodes
 elemNumber :: Element -> Number
 elemNumber (Element _ number _) = number
 
-elemMaterial :: Element -> Name
-elemMaterial (Element _ _ name) = name
+elemMaterial :: Element -> Material
+elemMaterial (Element _ _ mat) = mat
 
 
 instance JSON Element where
