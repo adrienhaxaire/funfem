@@ -19,16 +19,13 @@ cabal-version:      >= 1.2.0
 library
   build-depends:   
                    base == 4.*,
-                   repa >= 2.0.0.3,
-                   repa-algorithms >= 2.0.0.3,
                    json >= 0.4.4
 
   exposed-modules: 
                    Numeric.Funfem,
                    Numeric.Funfem.Elements,
                    Numeric.Funfem.Solver,
-                   Numeric.Funfem.Stiffnesses,
-                   Numeric.Funfem.Input,
-                   Numeric.Funfem.Hydraulics
+                   Numeric.Funfem.Input
+
 
   ghc-options:     -Wall
