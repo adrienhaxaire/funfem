@@ -11,69 +11,10 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Solver (cg) where
-
-import Data.Array.Repa as R
+module Numeric.Funfem.Solver where
 
 eps :: Double
 eps = 1.0e-3
-
--- | Conjugate Gradient solver. Solves the system A*x = b
-cg :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double 
-      -> Array DIM1 Double
-{-# INLINE cg #-}
-cg a x b = if norm r <= eps then x else cg' a x r r r
-  where 
-    r = b - a `multiplyMV` x
-
-
-cg' :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
-       -> Array DIM1 Double -> Array DIM1 Double
-       -> Array DIM1 Double 
-{-# INLINE cg' #-}
-cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p' 
-  where 
-    alpha' = alpha r z p a
-    beta' = beta z' r' z r
-    x' = x + R.map (*alpha') p 
-    r' = r - R.map (*alpha') (a `multiplyMV` p)
-    z' = r' 
-    p' = z'+ R.map (*beta') p 
-
-
-alpha :: Array DIM1 Double -> Array DIM1 Double 
-         -> Array DIM1 Double -> Array DIM2 Double
-         -> Double
-{-# INLINE  alpha #-}
-alpha r z p a = (r `dot` z) / (p `dot` (a `multiplyMV` p))
-
-
-beta :: Array DIM1 Double -> Array DIM1 Double 
-        -> Array DIM1 Double -> Array DIM1 Double
-        -> Double
-{-# INLINE beta #-}
-beta z1 r1 z0 r0 = (z1 `dot` r1) / (z0 `dot` r0)
-
-
--- | Simple dot product
-dot ::  Array DIM1 Double -> Array DIM1 Double -> Double
-{-# INLINE dot #-}
-dot x y = toScalar $ R.sum (x * y)
-
-
--- | Euclidian norm 
-norm :: Array DIM1 Double -> Double
-{-# INLINE norm #-}
-norm  = sqrt . toScalar . R.sum . R.map (**2) 
-
-
--- | Didn't find it in the repa lib
-multiplyMV :: Array DIM2 Double -> Array DIM1 Double -> Array DIM1 Double
-{-# NOINLINE multiplyMV #-}
-multiplyMV a x = R.sum $ a*x'
-  where x' = extend (Z:.(dim::Int):.All) x
-        dim = rank $ extent a
-
 
 
 
