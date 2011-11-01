@@ -18,6 +18,8 @@ eps = 1.0e-3
 
 
 
+
+
 {- taken from wikipedia, iterative version:
 
 x0 = 0 (or better)
