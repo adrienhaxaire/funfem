@@ -17,9 +17,9 @@ data Vector = Vector [Double]
             deriving (Eq, Ord, Show)
 
 instance Num Vector where
-  Vector a + Vector b = Vector [a' + b' | a' <- a, b' <- b]
-  Vector a * Vector b = Vector [a' * b' | a' <- a, b' <- b]
-  negate (Vector [a,b]) = Vector [-a,-b]
+  Vector a + Vector b = Vector (zipWith (+) a b)
+  Vector a * Vector b = Vector (zipWith (*) a b)
+  negate (Vector a) = Vector [-a' | a' <- a]
   fromInteger n = Vector [fromInteger n]
 
 fromVector :: Vector -> [Double]
@@ -62,7 +62,4 @@ fromVectors v = Matrix v
 
 dot :: Matrix -> Vector -> Vector
 {-# INLINE dot #-}
-dot m v = fromList $ dot' (fromMatrix m) v 
-  where
-    dot' (w:ws) v' = [w .* v'] Prelude.++ dot' ws v'
-    dot' [] _ = []  
+dot m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
