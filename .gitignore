@@ -12,3 +12,4 @@ QC
 # haddock, hlint
 doc/
 report.html
+dist/
