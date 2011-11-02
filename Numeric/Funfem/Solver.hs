@@ -11,16 +11,33 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Solver where
+module Numeric.Funfem.Solver (cg) where
+
+import Numeric.Funfem.Vector
 
 eps :: Double
 eps = 1.0e-3
 
+cg :: Matrix -> Vector -> Vector -> Vector
+cg a x b = if norm r <= eps then x else cg' a x r r r
+  where
+    r = b - a `dot` x
+
+cg' :: Matrix -> Vector -> Vector -> Vector -> Vector -> Vector
+cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
+  where
+    alpha = (r .* z) / (p .* (a `dot` p))
+    beta = (z .* r) / (z .* r)
+    x' = x + vmap (*alpha) p
+    r' = r - vmap (*alpha) (a `dot` p)
+    z' = r'    
+    p' = z'+ vmap (*beta) p
 
 
 
 
-{- taken from wikipedia, iterative version:
+
+{- taken from wikipedia:
 
 x0 = 0 (or better)
 r0 = b - Ax0

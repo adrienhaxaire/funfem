@@ -1,12 +1,10 @@
 Name:               funfem
-Version:            0.1.0
+Version:            0.0.1
 Synopsis:           FEM library
 Description:
-    The Finite Element Method (FEM) is a numerical approach for solving
-    concrete physical problems by dividing the studied domain into
-    elements in which the equations describing the problem can be solved.
+    The Finite Element Method (FEM) is a numerical approach for solving concrete physical problems by dividing the studied domain into elements in which the equations describing the problem can be solved.
     .
-    This library provides usual tools for FEM: elements, solver, etc.
+    This library provides usual tools for FEM: elements, solver, etc. It is still under heavy construction.
 Category:           Numeric
 Stability:          experimental       
 License:            BSD3
@@ -24,6 +22,7 @@ library
   exposed-modules: 
                    Numeric.Funfem,
                    Numeric.Funfem.Elements,
+                   Numeric.Funfem.Vector,
                    Numeric.Funfem.Solver,
                    Numeric.Funfem.Input
 

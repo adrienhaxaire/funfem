@@ -39,8 +39,6 @@ instance JSON Node where
                                           ,("number", showJSON number)]
 
 -- Elements
--- | Needs a list of Node numbers, the Element number and 
--- the name of the Element material
 data Element = Element [Node] Number Material
              deriving (Eq, Ord, Show)
 
@@ -121,12 +119,9 @@ matPropertyFromName mat name = propValue $ head property
   where property = filter (\n -> (propName n) == name) (matProperties mat)
 
 
-
-
 -- Boundary conditions
--- | [Number] is the list of nodes affected by the boundary conditions,
+-- | Needs the list of nodes affected by the boundary conditions,
 -- i.e. no Neumann BC handled yet
-
 data BoundaryCondition = BoundaryCondition Name [Node] Value
                          deriving (Eq, Ord, Show)
                                   
@@ -140,6 +135,7 @@ instance JSON BoundaryCondition where
   showJSON (BoundaryCondition name nodes value) = makeObj [("name", showJSON name)
                                                           ,("nodes", showJSON nodes)
                                                           ,("value", showJSON value)]
+
 bcName :: BoundaryCondition -> Name
 bcName (BoundaryCondition name _ _) = name
 

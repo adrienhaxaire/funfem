@@ -50,6 +50,18 @@ concat v1 v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
 {-# INLINE (++) #-}
 v1 ++ v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
 
+map :: (Double -> Double) -> Vector -> Vector
+{-# INLINE map #-}
+map f v = fromList $ Prelude.map f (fromVector v)
+
+-- | Alias for local map, to avoid ambiguity with Prelude.map when fully imported (without the 'as' keyword)
+vmap :: (Double -> Double) -> Vector -> Vector
+vmap = Numeric.Funfem.Vector.map
+
+
+norm :: Vector -> Double
+{-# INLINE norm #-}
+norm v = sqrt (v .* v)
 
 data Matrix = Matrix [Vector]
             deriving (Eq, Ord, Show)
