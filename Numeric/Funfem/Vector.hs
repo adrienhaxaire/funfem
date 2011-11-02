@@ -13,6 +13,8 @@
 
 module Numeric.Funfem.Vector where
 
+import Data.List as L
+
 data Vector = Vector [Double] 
             deriving (Eq, Ord, Show)
 
@@ -34,12 +36,12 @@ size = length . fromVector
 
 dot_product :: Vector -> Vector -> Double
 {-# INLINE dot_product #-}
-dot_product v1 v2 = foldl (+) 0 $ fromVector (v1*v2)
+dot_product v1 v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 
 -- | Infix dot product 
 (.*) :: Vector -> Vector -> Double
 {-# INLINE (.*) #-}
-v1 .* v2 = foldl (+) 0 $ fromVector (v1*v2)
+v1 .* v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 
 concat :: Vector -> Vector -> Vector 
 {-# INLINE concat #-}
