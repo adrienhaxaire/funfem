@@ -18,6 +18,8 @@ import Numeric.Funfem.Vector
 eps :: Double
 eps = 1.0e-3
 
+-- | Solves Ax = b. Arguments are passed in this order. No first guess on x is made, so 
+-- it should be initialized first.
 cg :: Matrix -> Vector -> Vector -> Vector
 cg a x b = if norm r <= eps then x else cg' a x r r r
   where
@@ -27,7 +29,7 @@ cg' :: Matrix -> Vector -> Vector -> Vector -> Vector -> Vector
 cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
   where
     alpha = (r .* z) / (p .* (a `dot` p))
-    beta = (z .* r) / (z .* r)
+    beta = (z' .* r') / (z .* r)
     x' = x + vmap (*alpha) p
     r' = r - vmap (*alpha) (a `dot` p)
     z' = r'    
