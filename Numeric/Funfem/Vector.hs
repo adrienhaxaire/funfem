@@ -30,6 +30,23 @@ fromVector (Vector v) = v
 fromList :: [Double] -> Vector 
 fromList v = Vector v
 
+
+head :: Vector -> Double
+{-# INLINE head #-}
+head = Prelude.head . fromVector
+
+tail :: Vector -> [Double]
+{-# INLINE tail #-}
+tail = Prelude.tail . fromVector
+
+last :: Vector -> Double
+{-# INLINE last #-}
+last = Prelude.last . fromVector
+
+init :: Vector -> [Double]
+{-# INLINE init #-}
+init = Prelude.init . fromVector
+
 size :: Vector -> Int
 {-# INLINE size #-}
 size = length . fromVector
@@ -77,3 +94,6 @@ fromVectors v = Matrix v
 dot :: Matrix -> Vector -> Vector
 {-# INLINE dot #-}
 dot m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
+
+-- tensor :: Vector -> Vector -> Matrix
+-- tensor (v:vs) w = zipWith (*)
