@@ -4,7 +4,7 @@ import Numeric.Funfem
 
 main :: IO()
 main = do
-  f <- readFile "ex1.json"
+  f <- readFile "read-input.json"
   let i = inputFromString f
   let elements = elementsFromInput i    
   print elements
