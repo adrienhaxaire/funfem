@@ -84,7 +84,6 @@ fromVectors v = Matrix v
 fromMatrix :: Matrix -> [Vector]
 fromMatrix (Matrix m) = m
 
--- | NB: Don't know its speed, not a simple deconstructor.
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
