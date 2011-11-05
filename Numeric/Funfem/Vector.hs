@@ -22,7 +22,9 @@ instance Num Vector where
   Vector a + Vector b = Vector (zipWith (+) a b)
   Vector a * Vector b = Vector (zipWith (*) a b)
   negate (Vector a) = Vector [-a' | a' <- a]
+  abs (Vector a) = Vector [abs a' | a' <- a]
   fromInteger n = Vector [fromInteger n]
+  signum (Vector a) = Vector [signum a' | a' <- a]
 
 fromVector :: Vector -> [Double]
 fromVector (Vector v) = v
@@ -93,7 +95,5 @@ dot m v = fromList $ Prelude.map (.* v) (fromMatrix m)
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
 
-
-
--- tensor :: Vector -> Vector -> Matrix
--- tensor (v:vs) w = zipWith (*)
+tensor :: Vector -> Vector -> Matrix
+tensor vs ws = fromVectors [Numeric.Funfem.Vector.map (*v) ws | v <- fromVector vs]
