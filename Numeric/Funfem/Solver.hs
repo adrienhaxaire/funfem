@@ -23,40 +23,15 @@ eps = 1.0e-3
 cg :: Matrix -> Vector -> Vector -> Vector
 cg a x b = if norm r <= eps then x else cg' a x r r r
   where
-    r = b - a `dot` x
+    r = b - multMV a x
 
 cg' :: Matrix -> Vector -> Vector -> Vector -> Vector -> Vector
 cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
   where
-    alpha = (r .* z) / (p .* (a `dot` p))
+    alpha = (r .* z) / (p .* (multMV a p))
     beta = (z' .* r') / (z .* r)
     x' = x + vmap (*alpha) p
-    r' = r - vmap (*alpha) (a `dot` p)
+    r' = r - vmap (*alpha) (multMV a p)
     z' = r'    
     p' = z'+ vmap (*beta) p
-
-
-
-
-
-{- taken from wikipedia:
-
-x0 = 0 (or better)
-r0 = b - Ax0
-z0 = M-1 r0
-p0 = z0
-k = 0
-
-loop:
-alpha(k) = (r(k).z(k))/(p(k).A.p(k))
-x(k+1) = x(k) + alpha(k).p(k)
-r(k+1) = r(k) - aplha(k).A.p(k)
-check on r(k+1)
-z(k+1) = M^-1 . r(k+1)
-beta(k+1) = z(k+1).r(k+1)/z(k).r(k)
-p(k+1) = z(k+1) + beta(k)p(k)
-k = k + 1
-end loop
-
--}
 
