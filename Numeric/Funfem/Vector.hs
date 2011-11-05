@@ -30,21 +30,16 @@ fromVector (Vector v) = v
 fromList :: [Double] -> Vector 
 fromList v = Vector v
 
-
 head :: Vector -> Double
-{-# INLINE head #-}
 head = Prelude.head . fromVector
 
 tail :: Vector -> [Double]
-{-# INLINE tail #-}
 tail = Prelude.tail . fromVector
 
 last :: Vector -> Double
-{-# INLINE last #-}
 last = Prelude.last . fromVector
 
 init :: Vector -> [Double]
-{-# INLINE init #-}
 init = Prelude.init . fromVector
 
 size :: Vector -> Int
@@ -61,16 +56,13 @@ dot_product v1 v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 v1 .* v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 
 concat :: Vector -> Vector -> Vector 
-{-# INLINE concat #-}
 concat v1 v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
 
 -- | Infix vector concatenation
 (++) :: Vector -> Vector -> Vector
-{-# INLINE (++) #-}
 v1 ++ v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
 
 map :: (Double -> Double) -> Vector -> Vector
-{-# INLINE map #-}
 map f v = fromList $ Prelude.map f (fromVector v)
 
 -- | Alias for local map, to avoid ambiguity with Prelude.map when fully imported (without the 'as' keyword)
@@ -100,7 +92,6 @@ dot m v = fromList $ Prelude.map (.* v) (fromMatrix m)
 
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
-
 
 
 
