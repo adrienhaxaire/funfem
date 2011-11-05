@@ -77,7 +77,6 @@ map f v = fromList $ Prelude.map f (fromVector v)
 vmap :: (Double -> Double) -> Vector -> Vector
 vmap = Numeric.Funfem.Vector.map
 
-
 norm :: Vector -> Double
 {-# INLINE norm #-}
 norm v = sqrt (v .* v)
@@ -85,15 +84,25 @@ norm v = sqrt (v .* v)
 data Matrix = Matrix [Vector]
             deriving (Eq, Ord, Show)
 
+fromVectors :: [Vector] -> Matrix
+fromVectors v = Matrix v
+
 fromMatrix :: Matrix -> [Vector]
 fromMatrix (Matrix m) = m
 
-fromVectors :: [Vector] -> Matrix
-fromVectors v = Matrix v
+-- | NB: Don't know its speed, not a simple deconstructor.
+fromMatrix' :: Matrix -> [[Double]]
+fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
 dot :: Matrix -> Vector -> Vector
 {-# INLINE dot #-}
 dot m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
+
+transpose :: Matrix -> Matrix
+transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
+
+
+
 
 -- tensor :: Vector -> Vector -> Matrix
 -- tensor (v:vs) w = zipWith (*)
