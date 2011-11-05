@@ -88,12 +88,16 @@ fromMatrix (Matrix m) = m
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
-dot :: Matrix -> Vector -> Vector
-{-# INLINE dot #-}
-dot m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
-
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
 
 tensor :: Vector -> Vector -> Matrix
 tensor vs ws = fromVectors [Numeric.Funfem.Vector.map (*v) ws | v <- fromVector vs]
+
+multMV :: Matrix -> Vector -> Vector
+{-# INLINE multMV #-}
+multMV m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
+
+multMM :: Matrix -> Matrix -> Matrix
+multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
+
