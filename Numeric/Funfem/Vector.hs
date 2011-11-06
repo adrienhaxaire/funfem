@@ -53,6 +53,9 @@ butSlice b e v = fromList $ (pre L.++ post)
     pre = take (b-1) $ fromVector v
     post = drop e $ fromVector v
 
+(!) :: Vector -> Int -> Double
+v ! n = (fromVector v) L.!! n
+
 size :: Vector -> Int
 {-# INLINE size #-}
 size = length . fromVector
@@ -112,7 +115,7 @@ multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromM
 
 --multSM :: Double -> Matrix -> Matrix
 
--- | Returns a matrix without given row and column number
+-- | Returns a matrix without row and column numbers
 butRowColumn :: Int -> Int -> Matrix -> Matrix
 butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
   where
@@ -124,4 +127,21 @@ butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
         post = L.tail $ (snd splat)
         splat = splitAt (r-1) m        
   
+det :: Matrix -> Double
+det (Matrix []) = 0.0
+det (Matrix [Vector [a]]) = a
+det m = if size fstRow == 2 then det2x2 m else subdets
+  where
+    fstRow = L.head $ fromMatrix m
+    subdets = L.sum $ L.zipWith (*) cofs dets
+    cofs = [if even i then (fstRow ! i) else -(fstRow ! i) | i <- [0..(n-1)]]
+    dets = [det (butRowColumn 1 i m) | i <- [1..n]]
+    n = size fstRow
 
+det2x2 :: Matrix -> Double
+det2x2 m = det2x2' (L.head vs) (L.last vs)
+  where
+    vs = fromMatrix m
+    det2x2' v w = head' v * last' w - last' v * head' w
+    head' = Numeric.Funfem.Vector.head
+    last' = Numeric.Funfem.Vector.last
