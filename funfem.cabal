@@ -24,6 +24,7 @@ library
                    Numeric.Funfem.Elements,
                    Numeric.Funfem.Vector,
                    Numeric.Funfem.Solver,
+                   Numeric.Funfem.ShapeFunctions,
                    Numeric.Funfem.Input
 
 
