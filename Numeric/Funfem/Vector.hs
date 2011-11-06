@@ -121,13 +121,13 @@ multSM x m = fromVectors [vmap (*x) v | v <- fromMatrix m]
 butRowColumn :: Int -> Int -> Matrix -> Matrix
 butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
   where
-    butColumn c (v:vs) = [butSlice c c v] L.++ butColumn c vs
-    butColumn c [] = []    
-    butRow r m = pre L.++ post
+    butColumn c' (v:vs) = [butSlice c' c' v] L.++ butColumn c' vs
+    butColumn _ [] = []    
+    butRow r' m' = pre L.++ post
       where 
         pre = fst splat
         post = L.tail $ (snd splat)
-        splat = splitAt (r-1) m        
+        splat = splitAt (r'-1) m'        
   
 det :: Matrix -> Double
 det (Matrix []) = 0.0
