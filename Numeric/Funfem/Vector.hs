@@ -112,9 +112,16 @@ multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromM
 
 --multSM :: Double -> Matrix -> Matrix
 
--- | Drops row and column
- 
--- mdrop m r c = fromVectors $ 
+-- | Returns a matrix without given row and column number
+butRowColumn :: Int -> Int -> Matrix -> Matrix
+butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
+  where
+    butColumn c (v:vs) = [butSlice c c v] L.++ butColumn c vs
+    butColumn c [] = []    
+    butRow r m = pre L.++ post
+      where 
+        pre = fst splat
+        post = L.tail $ (snd splat)
+        splat = splitAt (r-1) m        
   
-  
-  
+
