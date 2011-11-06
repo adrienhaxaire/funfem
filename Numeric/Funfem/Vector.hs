@@ -53,6 +53,7 @@ butSlice b e v = fromList $ (pre L.++ post)
     pre = take (b-1) $ fromVector v
     post = drop e $ fromVector v
 
+-- | Unsafe element accessor
 (!) :: Vector -> Int -> Double
 v ! n = (fromVector v) L.!! n
 
@@ -146,3 +147,5 @@ det2x2 m = det2x2' (L.head vs) (L.last vs)
     det2x2' v w = head' v * last' w - last' v * head' w
     head' = Numeric.Funfem.Vector.head
     last' = Numeric.Funfem.Vector.last
+    
+    
