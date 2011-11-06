@@ -45,7 +45,7 @@ init :: Vector -> [Double]
 init = L.init . fromVector
 
 slice :: Int -> Int -> Vector -> Vector
-slice b e v = fromList $ take (e - b + 1) $ drop b $ fromVector v
+slice b e v = fromList $ take (e-b+1) $ drop (b-1) $ fromVector v
 
 butSlice :: Int -> Int -> Vector -> Vector
 butSlice b e v = fromList $ (pre L.++ post)
@@ -108,6 +108,7 @@ multMV m v = fromList $ L.map (.* v) (fromMatrix m)
 
 multMM :: Matrix -> Matrix -> Matrix
 multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
+
 
 --multSM :: Double -> Matrix -> Matrix
 
