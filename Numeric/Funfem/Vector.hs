@@ -33,16 +33,25 @@ fromList :: [Double] -> Vector
 fromList v = Vector v
 
 head :: Vector -> Double
-head = Prelude.head . fromVector
+head = L.head . fromVector
 
 tail :: Vector -> [Double]
-tail = Prelude.tail . fromVector
+tail = L.tail . fromVector
 
 last :: Vector -> Double
-last = Prelude.last . fromVector
+last = L.last . fromVector
 
 init :: Vector -> [Double]
-init = Prelude.init . fromVector
+init = L.init . fromVector
+
+slice :: Int -> Int -> Vector -> Vector
+slice b e v = fromList $ take (e - b + 1) $ drop b $ fromVector v
+
+butSlice :: Int -> Int -> Vector -> Vector
+butSlice b e v = fromList $ (pre L.++ post)
+  where
+    pre = take (b-1) $ fromVector v
+    post = drop e $ fromVector v
 
 size :: Vector -> Int
 {-# INLINE size #-}
@@ -58,16 +67,16 @@ dot_product v1 v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 v1 .* v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 
 concat :: Vector -> Vector -> Vector 
-concat v1 v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
+concat v1 v2 = Vector (fromVector v1 L.++ fromVector v2)
 
 -- | Infix vector concatenation
 (++) :: Vector -> Vector -> Vector
-v1 ++ v2 = Vector (fromVector v1 Prelude.++ fromVector v2)
+v1 ++ v2 = Vector (fromVector v1 L.++ fromVector v2)
 
 map :: (Double -> Double) -> Vector -> Vector
-map f v = fromList $ Prelude.map f (fromVector v)
+map f v = fromList $ L.map f (fromVector v)
 
--- | Alias for local map, to avoid ambiguity with Prelude.map when fully imported (without the 'as' keyword)
+-- | Alias for local map, to avoid ambiguity with Data.List.map when fully imported (without the 'as' keyword)
 vmap :: (Double -> Double) -> Vector -> Vector
 vmap = Numeric.Funfem.Vector.map
 
@@ -90,13 +99,21 @@ fromMatrix' m = [fromVector v | v <- fromMatrix m]
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
 
-tensor :: Vector -> Vector -> Matrix
-tensor vs ws = fromVectors [Numeric.Funfem.Vector.map (*v) ws | v <- fromVector vs]
+tensor_product :: Vector -> Vector -> Matrix
+tensor_product vs ws = fromVectors [Numeric.Funfem.Vector.map (*v) ws | v <- fromVector vs]
 
 multMV :: Matrix -> Vector -> Vector
 {-# INLINE multMV #-}
-multMV m v = fromList $ Prelude.map (.* v) (fromMatrix m) 
+multMV m v = fromList $ L.map (.* v) (fromMatrix m) 
 
 multMM :: Matrix -> Matrix -> Matrix
 multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
 
+--multSM :: Double -> Matrix -> Matrix
+
+-- | Drops row and column
+ 
+-- mdrop m r c = fromVectors $ 
+  
+  
+  
