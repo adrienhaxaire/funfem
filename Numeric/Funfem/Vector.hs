@@ -112,8 +112,9 @@ multMV m v = fromList $ L.map (.* v) (fromMatrix m)
 multMM :: Matrix -> Matrix -> Matrix
 multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
 
-
---multSM :: Double -> Matrix -> Matrix
+-- | Scalar to Matrix multiplication
+multSM :: Double -> Matrix -> Matrix
+multSM x m = fromVectors [vmap (*x) v | v <- fromMatrix m]
 
 -- | Returns a matrix without row and column numbers
 butRowColumn :: Int -> Int -> Matrix -> Matrix
