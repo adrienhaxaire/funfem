@@ -61,6 +61,25 @@ instance Arbitrary Vector where
 prop_double_add_same_size :: Vector -> Bool  
 prop_double_add_same_size v = size (v + v) == size v
 
+-- Matrix
+instance Arbitrary Matrix where
+  arbitrary = do
+    -- len <- choose (1,3) :: Gen Int
+    let len = 4
+    v1 <- vectorOf len arbitrary
+    v2 <- vectorOf len arbitrary
+    v3 <- vectorOf len arbitrary
+    v4 <- vectorOf len arbitrary
+    let vs = Prelude.map fromList [v1,v2,v3,v4]
+    return (fromVectors vs)
+
+prop_double_transpose :: Matrix -> Bool
+prop_double_transpose m = (transpose.transpose) m == m
+
+prop_transposed_det_equal :: Matrix -> Bool
+prop_transposed_det_equal m = abs(det (transpose m) - det m) < 1.0e-3
+
+
 
 
 main :: IO Bool
