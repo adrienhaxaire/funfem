@@ -2,9 +2,12 @@
 import Test.QuickCheck
 import Test.QuickCheck.All
 
+import Data.List as L hiding (transpose)
 
 import Numeric.Funfem.Elements as E
-import Numeric.Funfem.Vector
+import Numeric.Funfem.Vector 
+import Numeric.Funfem.Solver
+
 
 -- Elements
 instance Arbitrary E.Node where
@@ -79,8 +82,18 @@ prop_double_transpose m = (transpose.transpose) m == m
 prop_transposed_det_equal :: Matrix -> Bool
 prop_transposed_det_equal m = abs(det (transpose m) - det m) < 1.0e-3
 
-
-
-
 main :: IO Bool
 main = $(quickCheckAll)
+
+
+
+
+
+{-
+prop_solved_twice_equal :: Matrix -> Vector -> Vector -> Bool
+prop_solved_twice_equal a x b = L.foldl' (&&) True [r < 1.0e-3 | r <- res]
+  where
+    x1 = cg a x b 
+    x2 = cg a x1 b
+    res = L.map (abs) $ zipWith (-) (fromVector x1) (fromVector x2)
+-}
