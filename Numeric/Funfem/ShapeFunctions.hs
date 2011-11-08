@@ -18,9 +18,9 @@ import Data.List as L hiding (transpose)
 import Numeric.Funfem.Elements
 import Numeric.Funfem.Vector
 
-
-tri3 :: Element -> [Vector]
-tri3 el = zipWith (*) coorsV shapes
+-- | Interpolation function for 3-noded triangle
+tri3 :: Element -> Matrix
+tri3 el = fromVectors $ zipWith (*) coorsV shapes
   where
     coors = [nodeCoordinates node | node <- elemNodes el]
     coorsV = [fromList [1, fst cs, snd cs] | cs <- coors]        
@@ -30,7 +30,7 @@ tri3 el = zipWith (*) coorsV shapes
     twoAreas = det coorsM
 
 -- | Derivative of the tri3 interpolation
-tri3' :: Element -> [Vector]
-tri3' el = [slice 1 2 v | v <- fromMatrix m]
-  where  
-    m = transpose $ fromVectors $ tri3 el
+tri3' :: Element -> Matrix
+tri3' el = transpose $ fromVectors $ [slice 1 2 v | v <- vs]
+  where
+    vs = fromMatrix $ tri3 el
