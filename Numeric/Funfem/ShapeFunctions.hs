@@ -13,7 +13,7 @@
 
 module Numeric.Funfem.ShapeFunctions where
 
-import Data.List as L
+import Data.List as L hiding (transpose)
 
 import Numeric.Funfem.Elements
 import Numeric.Funfem.Vector
@@ -29,7 +29,8 @@ tri3 el = zipWith (*) coorsV shapes
     shapes = [fromList $ L.map (/twoAreas) [det (butRowColumn 1 i coorsM) | i <- is] | is <- perms] 
     twoAreas = det coorsM
 
-
-
-
-
+-- | Derivative of the tri3 interpolation
+tri3' :: Element -> [Vector]
+tri3' el = [slice 1 2 v | v <- fromMatrix m]
+  where  
+    m = transpose $ fromVectors $ tri3 el
