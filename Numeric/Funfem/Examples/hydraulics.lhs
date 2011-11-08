@@ -28,8 +28,15 @@ of the helper functions:
 >  let elements = elementsFromInput i    
 >  let materials = materialsFromInput i
 >  let boundaries = boundariesFromInput i
+>  let nodes = nodesFromInput i
+
 >  print elements
+>  print materials
+>  print boundaries
+>  print nodes
+
 
 As this library is still work in progress, our example stops here at
 the moment. It will be wxtended as soon as the developments in the
 library allow it.
+
