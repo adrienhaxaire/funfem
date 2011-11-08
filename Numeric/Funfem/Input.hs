@@ -17,7 +17,7 @@ module Numeric.Funfem.Input where
 
 import Text.JSON
 import Numeric.Funfem.Elements
-
+import Numeric.Funfem.BoundaryConditions
 
 data Input = Input [Node] [Element] [Material] [BoundaryCondition]
              deriving (Eq, Ord, Show)

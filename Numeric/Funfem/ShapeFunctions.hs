@@ -32,3 +32,4 @@ tri3 el = zipWith (*) coorsV shapes
 
 
 
+

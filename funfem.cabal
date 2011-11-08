@@ -25,6 +25,7 @@ library
                    Numeric.Funfem.Vector,
                    Numeric.Funfem.Solver,
                    Numeric.Funfem.ShapeFunctions,
+                   Numeric.Funfem.BoundaryConditions,
                    Numeric.Funfem.Input
 
 

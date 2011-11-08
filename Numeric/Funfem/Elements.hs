@@ -9,7 +9,7 @@
 -- Portabilty : not tested
 ----------------------------------------------------------------------------------
 --
--- Defines Node, Element and Material data
+-- Defines Node, Element, Material and BoundaryCondition data
 
 module Numeric.Funfem.Elements where
 
@@ -120,27 +120,3 @@ matPropertyFromName mat name = propValue $ head property
 
 
 -- Boundary conditions
--- | Needs the list of nodes affected by the boundary conditions,
--- i.e. no Neumann BC handled yet
-data BoundaryCondition = BoundaryCondition Name [Node] Value
-                         deriving (Eq, Ord, Show)
-                                  
-instance JSON BoundaryCondition where
-  readJSON object = do
-    obj <- readJSON object
-    name <- valFromObj "name" obj
-    nodes <- valFromObj "nodes" obj
-    value <- valFromObj "value" obj
-    return (BoundaryCondition name nodes value)
-  showJSON (BoundaryCondition name nodes value) = makeObj [("name", showJSON name)
-                                                          ,("nodes", showJSON nodes)
-                                                          ,("value", showJSON value)]
-
-bcName :: BoundaryCondition -> Name
-bcName (BoundaryCondition name _ _) = name
-
-bcNodes :: BoundaryCondition -> [Node]
-bcNodes (BoundaryCondition _ nodes _) = nodes
-
-bcValue :: BoundaryCondition -> Value
-bcValue (BoundaryCondition _ _ value) = value

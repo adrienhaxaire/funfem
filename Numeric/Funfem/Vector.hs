@@ -111,10 +111,12 @@ multMV :: Matrix -> Vector -> Vector
 multMV m v = fromList $ L.map (.* v) (fromMatrix m) 
 
 multMM :: Matrix -> Matrix -> Matrix
+{-# INLINE multMM #-}
 multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
 
 -- | Scalar to Matrix multiplication
 multSM :: Double -> Matrix -> Matrix
+{-# INLINE multSM #-}
 multSM x m = fromVectors [vmap (*x) v | v <- fromMatrix m]
 
 -- | Returns a matrix without row and column numbers
@@ -129,6 +131,12 @@ butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
         post = L.tail $ (snd splat)
         splat = splitAt (r'-1) m'        
   
+isSquare :: Matrix -> Bool
+isSquare m = L.foldl' (&&) True [(length column) == rows | column <- m']
+  where
+    m' = fromMatrix' m
+    rows = length m'
+
 det :: Matrix -> Double
 det (Matrix []) = 0.0
 det (Matrix [Vector [a]]) = a
