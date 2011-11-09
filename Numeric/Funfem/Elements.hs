@@ -119,4 +119,3 @@ matPropertyFromName mat name = propValue $ head property
   where property = filter (\n -> (propName n) == name) (matProperties mat)
 
 
--- Boundary conditions

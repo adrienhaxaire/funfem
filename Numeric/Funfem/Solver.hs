@@ -14,6 +14,8 @@
 module Numeric.Funfem.Solver (cg) where
 
 import Numeric.Funfem.Vector
+import Numeric.Funfem.Matrix
+
 
 eps :: Double
 eps = 1.0e-3

@@ -8,6 +8,7 @@
 *.hi
 qc
 QC
+TAGS
 
 # haddock, hlint
 doc/

@@ -23,6 +23,7 @@ library
                    Numeric.Funfem,
                    Numeric.Funfem.Elements,
                    Numeric.Funfem.Vector,
+                   Numeric.Funfem.Matrix,
                    Numeric.Funfem.Solver,
                    Numeric.Funfem.ShapeFunctions,
                    Numeric.Funfem.BoundaryConditions,

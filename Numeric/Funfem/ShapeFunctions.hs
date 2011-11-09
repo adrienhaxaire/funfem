@@ -17,6 +17,7 @@ import Data.List as L hiding (transpose)
 
 import Numeric.Funfem.Elements
 import Numeric.Funfem.Vector
+import Numeric.Funfem.Matrix
 
 -- | Interpolation function for 3-noded triangle
 tri3 :: Element -> Matrix
