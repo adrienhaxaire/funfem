@@ -39,6 +39,9 @@ fromMatrix (Matrix m) = m
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
+new :: Int -> Double -> Matrix
+new n d = fromVectors $ take n (repeat (Numeric.Funfem.Vector.new n d))
+
 dim :: Matrix -> (Int, Int)
 dim m = (size $ L.head $ fromMatrix m, length $ fromMatrix m) 
 
@@ -112,7 +115,8 @@ row r m = (fromMatrix m) L.!! (r-1)
 col :: Int -> Matrix -> Vector
 col c m = row c $ Numeric.Funfem.Matrix.transpose m   
 
--- | Extracts submatrix formed by a number of rows and columns from a matrix at specified position
+-- | Extracts submatrix formed by a number of rows and columns from a
+-- matrix at specified position
 extract :: Int -> Int -> Matrix -> (Int, Int) -> Matrix
 extract r c m (i,j) = fromVectors $ cols $ rows
   where
@@ -120,6 +124,11 @@ extract r c m (i,j) = fromVectors $ cols $ rows
     cols = L.map (slice j (j+c-1))
     
         
--- | Inserts first matrix into second one at given position (top left corner)
--- insert :: Matrix -> Matrix -> Int -> Int -> Matrix
--- insert f s i j = 
+-- | Inserts (adds) first matrix into second one at given position (top left
+-- corner). NB: inserting a bigger matrix in a smaller one will extend
+-- it!
+--insert :: Matrix -> Matrix -> (Int, Int) -> Matrix
+--insert f s (i,j) = 
+--  where
+--    (rows,cols) = dim f
+--    extract (rows-i) (cols-j) s (i,j)
