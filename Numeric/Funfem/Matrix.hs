@@ -18,7 +18,6 @@ import Data.Maybe
 
 import Numeric.Funfem.Vector
 
-
 data Matrix = Matrix [Vector]
             deriving (Eq, Ord, Show)
 
@@ -82,6 +81,10 @@ isSquare m = L.foldl' (&&) True [(length column) == rows | column <- m']
   where
     m' = fromMatrix' m
     rows = length m'
+
+-- | Safe determinant, checks for square matrix
+maybeDet :: Matrix -> Maybe Double
+maybeDet m = if (isSquare m) then Just (det m) else Nothing
 
 det :: Matrix -> Double
 det (Matrix []) = 0.0
