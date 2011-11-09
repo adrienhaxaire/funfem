@@ -112,8 +112,11 @@ multMV m v = fromList $ L.map (.* v) (fromMatrix m)
 
 multMM :: Matrix -> Matrix -> Matrix
 {-# INLINE multMM #-}
-multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix b] | a' <- fromMatrix a]
-
+multMM a b = fromVectors [fromList [a' .* b' | b' <- fromMatrix $ transpose' b] | a' <- fromMatrix a]
+  where
+    transpose' = Numeric.Funfem.Vector.transpose
+    
+    
 -- | Scalar to Matrix multiplication
 multSM :: Double -> Matrix -> Matrix
 {-# INLINE multSM #-}
