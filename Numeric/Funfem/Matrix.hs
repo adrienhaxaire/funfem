@@ -14,7 +14,6 @@
 module Numeric.Funfem.Matrix where
 
 import Data.List as L
-import Data.Maybe
 
 import Numeric.Funfem.Vector
 
@@ -40,6 +39,9 @@ fromMatrix (Matrix m) = m
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
+dim :: Matrix -> (Int, Int)
+dim m = (size $ L.head $ fromMatrix m, length $ fromMatrix m) 
+
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
 
@@ -64,7 +66,7 @@ multSM :: Double -> Matrix -> Matrix
 {-# INLINE multSM #-}
 multSM x m = fromVectors [vmap (*x) v | v <- fromMatrix m]
 
--- | Returns a matrix without row and column numbers
+-- | Returns a matrix without row and column 
 butRowColumn :: Int -> Int -> Matrix -> Matrix
 butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
   where
@@ -77,11 +79,8 @@ butRowColumn r c m = fromVectors $ butRow r $ butColumn c $ fromMatrix m
         splat = splitAt (r'-1) m'        
   
 isSquare :: Matrix -> Bool
-isSquare m = L.foldl' (&&) True [(length column) == rows | column <- m']
-  where
-    m' = fromMatrix' m
-    rows = length m'
-
+isSquare m = let (rows,cols) = dim m in rows == cols
+  
 -- | Safe determinant, checks for square matrix
 maybeDet :: Matrix -> Maybe Double
 maybeDet m = if (isSquare m) then Just (det m) else Nothing
@@ -104,5 +103,23 @@ det2x2 m = det2x2' (L.head vs) (L.last vs)
     det2x2' v w = head' v * last' w - last' v * head' w
     head' = Numeric.Funfem.Vector.head
     last' = Numeric.Funfem.Vector.last
+
+-- | Extracts given row
+row :: Int -> Matrix -> Vector    
+row r m = (fromMatrix m) L.!! (r-1)   
     
+-- | Extracts given column          
+col :: Int -> Matrix -> Vector
+col c m = row c $ Numeric.Funfem.Matrix.transpose m   
+
+-- | Extracts submatrix formed by a number of rows and columns from a matrix at specified position
+extract :: Int -> Int -> Matrix -> (Int, Int) -> Matrix
+extract r c m (i,j) = fromVectors $ cols $ rows
+  where
+    rows = [row r' m | r' <- [i..(i+r-1)]]
+    cols = L.map (slice j (j+c-1))
     
+        
+-- | Inserts first matrix into second one at given position (top left corner)
+-- insert :: Matrix -> Matrix -> Int -> Int -> Matrix
+-- insert f s i j = 
