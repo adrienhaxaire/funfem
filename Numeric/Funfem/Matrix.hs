@@ -15,7 +15,7 @@ module Numeric.Funfem.Matrix where
 
 import Data.List as L
 
-import Numeric.Funfem.Vector
+import Numeric.Funfem.Vector as V
 
 data Matrix = Matrix [Vector]
             deriving (Eq, Ord, Show)
@@ -23,12 +23,12 @@ data Matrix = Matrix [Vector]
 instance Num Matrix where
   negate (Matrix a) = Matrix [-a' | a' <- a]
   abs (Matrix a) = Matrix [abs a' | a' <- a]
-  fromInteger n = undefined
+  fromInteger = undefined
   signum (Matrix a) = Matrix [signum a' | a' <- a]
   Matrix a + Matrix b = Matrix (zipWith (+) a b)
-  Matrix a * Matrix b = Matrix [fromList [a' .* b' | b' <- bt] | a' <- a]
+  Matrix a * Matrix b = Matrix [V.fromList [a' .* b' | b' <- bt] | a' <- a]
     where
-      bt = L.map (fromList) (L.transpose [fromVector v | v <- b])
+      bt = L.map (V.fromList) (L.transpose [fromVector v | v <- b])
 
 fromVectors :: [Vector] -> Matrix
 fromVectors v = Matrix v
@@ -39,21 +39,21 @@ fromMatrix (Matrix m) = m
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
-new :: Int -> Double -> Matrix
-new n d = fromVectors $ take n (repeat (Numeric.Funfem.Vector.new n d))
+genMatrix :: Int -> Double -> Matrix
+genMatrix n d = fromVectors $ take n (repeat (V.genVector n d))
 
 dim :: Matrix -> (Int, Int)
 dim m = (size $ L.head $ fromMatrix m, length $ fromMatrix m) 
 
 transpose :: Matrix -> Matrix
-transpose m = fromVectors [fromList l | l <- L.transpose $ fromMatrix' m]  
+transpose m = fromVectors [V.fromList l | l <- L.transpose $ fromMatrix' m]  
 
 tensor_product :: Vector -> Vector -> Matrix
-tensor_product vs ws = fromVectors [Numeric.Funfem.Vector.map (*v) ws | v <- fromVector vs]
+tensor_product vs ws = fromVectors [V.map (*v) ws | v <- fromVector vs]
 
 multMV :: Matrix -> Vector -> Vector
 {-# INLINE multMV #-}
-multMV m v = fromList $ L.map (.* v) (fromMatrix m) 
+multMV m v = V.fromList $ L.map (.* v) (fromMatrix m) 
 
 -- | Safe matrix multiplication
 multMM :: Matrix -> Matrix -> Maybe Matrix
@@ -61,7 +61,7 @@ multMM a b = if (size $ L.head $ fromMatrix a) /= (length $ fromMatrix b)
              then Nothing
              else Just mult 
   where
-    mult = fromVectors [fromList [a' .* b' | b' <- fromMatrix $ transpose' b] | a' <- fromMatrix a]
+    mult = fromVectors [V.fromList [a' .* b' | b' <- fromMatrix $ transpose' b] | a' <- fromMatrix a]
     transpose' = Numeric.Funfem.Matrix.transpose
     
 -- | Scalar to Matrix multiplication
@@ -103,9 +103,7 @@ det2x2 :: Matrix -> Double
 det2x2 m = det2x2' (L.head vs) (L.last vs)
   where
     vs = fromMatrix m
-    det2x2' v w = head' v * last' w - last' v * head' w
-    head' = Numeric.Funfem.Vector.head
-    last' = Numeric.Funfem.Vector.last
+    det2x2' v w = V.head v * V.last w - V.last v * V.head w
 
 -- | Extracts given row
 row :: Int -> Matrix -> Vector    
@@ -127,8 +125,9 @@ extract r c m (i,j) = fromVectors $ cols $ rows
 -- | Inserts (adds) first matrix into second one at given position (top left
 -- corner). NB: inserting a bigger matrix in a smaller one will extend
 -- it!
---insert :: Matrix -> Matrix -> (Int, Int) -> Matrix
---insert f s (i,j) = 
---  where
---    (rows,cols) = dim f
---    extract (rows-i) (cols-j) s (i,j)
+insert :: Matrix -> Matrix -> (Int, Int) -> Matrix
+insert f s (i,j) = e
+  where
+    (rows,cols) = dim f
+    e = extract (rows-i) (cols-j) s (i,j)
+

@@ -16,7 +16,6 @@ module Numeric.Funfem.BoundaryConditions where
 import Text.JSON
 
 import Numeric.Funfem.Elements
-import Numeric.Funfem.Vector
 
 -- | Needs the list of nodes affected by the boundary conditions,
 -- i.e. no Neumann BC handled yet

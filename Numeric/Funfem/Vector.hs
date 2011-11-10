@@ -23,7 +23,7 @@ instance Num Vector where
   Vector a * Vector b = Vector (zipWith (*) a b)
   negate (Vector a) = Vector [-a' | a' <- a]
   abs (Vector a) = Vector [abs a' | a' <- a]
-  fromInteger n = undefined 
+  fromInteger = undefined 
   signum (Vector a) = Vector [signum a' | a' <- a]
 
 fromVector :: Vector -> [Double]
@@ -32,20 +32,20 @@ fromVector (Vector v) = v
 fromList :: [Double] -> Vector 
 fromList v = Vector v
 
-new :: Int -> Double -> Vector
-new n d = fromList (take n (repeat d)) 
+genVector :: Int -> Double -> Vector
+genVector n d = fromList (take n (repeat d)) 
 
 head :: Vector -> Double
 head = L.head . fromVector
 
-tail :: Vector -> [Double]
-tail = L.tail . fromVector
+tail :: Vector -> Vector
+tail = fromList . L.tail . fromVector
 
 last :: Vector -> Double
 last = L.last . fromVector
 
-init :: Vector -> [Double]
-init = L.init . fromVector
+init :: Vector -> Vector
+init = fromList . L.init . fromVector
 
 slice :: Int -> Int -> Vector -> Vector
 slice b e v = fromList $ take (e-b+1) $ drop (b-1) $ fromVector v
