@@ -30,23 +30,20 @@ elementaryStiffness el = (transpose $ tri3' el) * (permeability `multSM` (tri3' 
     mat = elemMaterial el
     
 
-{-
-inject :: Matrix -> Stiffness -> Stiffness
-inject (Matrix []) s = s
-inject m s = let s' = injectVector (i, size v) v' s 
-                      v' = V.last v
-             in if size v > 0 then injectVector i (V.tail v) s' else s  
-  fromVectors 
+
+toGlobal :: Matrix -> Stiffness -> Stiffness
+toGlobal (Matrix []) s = s
+toGlobal m s = if rows > 0 then toGlobalVector rows (L.last vs) s' else s
   where
+    rows = length vs
     vs = fromMatrix m
--}
-
-
+    s' = toGlobal (fromVectors $ L.init vs) s
+         
 -- first Int to specify row number
-injectVector :: Int -> Vector -> Stiffness -> Stiffness
-injectVector 0 _ s = s
-injectVector i (Vector []) s = s  
-injectVector i v s = if size v > 0 then injectVector i (V.init v) s' else s
+toGlobalVector :: Int -> Vector -> Stiffness -> Stiffness
+toGlobalVector 0 _ s = s
+toGlobalVector i (Vector []) s = s  
+toGlobalVector i v s = if size v > 0 then toGlobalVector i (V.init v) s' else s
   where s' = toStiffness (i, size v) (V.last v) s 
     
 toStiffness :: (Int,Int) -> Double -> Stiffness -> Stiffness    
