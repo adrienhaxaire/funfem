@@ -121,6 +121,9 @@ extract r c m (i,j) = fromVectors $ cols $ rows
     rows = [row r' m | r' <- [i..(i+r-1)]]
     cols = L.map (slice j (j+c-1))
     
+atIndex :: Matrix -> (Int,Int) -> Double
+atIndex m index = L.head . L.head . fromMatrix' $ extract 1 1 m index 
+
         
 -- | Inserts (adds) first matrix into second one at given position (top left
 -- corner). NB: inserting a bigger matrix in a smaller one will extend
