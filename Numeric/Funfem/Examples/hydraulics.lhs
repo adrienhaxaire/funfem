@@ -40,3 +40,12 @@ As this library is still work in progress, our example stops here at
 the moment. It will be wxtended as soon as the developments in the
 library allow it.
 
+
+
+
+-- only here for development
+elementaryStiffness :: Element -> Matrix
+elementaryStiffness el = (transpose $ tri3' el) * (permeability `multSM` (tri3' el))
+  where
+    permeability = matPropertyFromName mat "permeability"
+    mat = elemMaterial el
