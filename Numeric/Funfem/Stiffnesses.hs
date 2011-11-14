@@ -20,16 +20,21 @@ import Numeric.Funfem.Elements
 import Numeric.Funfem.Matrix 
 import Numeric.Funfem.ShapeFunctions
 
+type Index = (Int,Int)
 type Stiffness = M.Map (Int,Int) Double 
 
 -- todo : convert stiffness to matrix
 -- add init
 
+initialize :: Stiffness
+initialize = M.singleton (1,1) 0.0 :: Stiffness 
 
-toGlobal :: Element -> (Element -> Matrix) -> Stiffness
-toGlobal el elemStiff = oneToGlobal localIndices globalIndices matrix stiff
+toGlobal :: (Element -> Matrix) -> [Element] ->  Stiffness
+toGlobal elemStiff els = M.unions $ L.map (elemToGlobal elemStiff) els
+
+elemToGlobal :: (Element -> Matrix) -> Element -> Stiffness
+elemToGlobal elemStiff el = indexToGlobal localIndices globalIndices matrix initialize
   where
-    stiff = M.singleton (1,1) 0.0 :: Stiffness 
     matrix = elemStiff el
     nodes = L.map nodeNumber (elemNodes el)
     nbNodes = length nodes
@@ -37,18 +42,24 @@ toGlobal el elemStiff = oneToGlobal localIndices globalIndices matrix stiff
     localIndices = [(i,j) | i <- [1..nbNodes], j <- [1..nbNodes]]
 
 
-oneToGlobal :: [(Int, Int)] -> [(Int, Int)] -> Matrix -> Stiffness -> Stiffness
-oneToGlobal [] _ _ s = s  
-oneToGlobal (l:ls) (g:gs) m s = toStiffness g (atIndex m l) s'
+indexToGlobal :: [Index] -> [Index] -> Matrix -> Stiffness -> Stiffness
+indexToGlobal [] _ _ s = s  
+indexToGlobal _ [] _ s = s
+indexToGlobal (l:ls) (g:gs) m s = toStiffness g (atIndex m l) s'
   where
-    s' = oneToGlobal ls gs m s
-            
+    s' = indexToGlobal ls gs m s
 
-toStiffness :: (Int,Int) -> Double -> Stiffness -> Stiffness    
+
+toStiffness :: Index -> Double -> Stiffness -> Stiffness    
 toStiffness (i,j) val s 
   | i <= 0    = s
   | j <= 0    = s
   | otherwise = M.insertWith' (+) (i,j) val s 
+
+
+--toMatrix :: Stiffness -> Matrix
+--toMatrix s = fromVectors $ 
+
 
 
 -- only here for development
