@@ -6,9 +6,19 @@ module. This will allow us to load it in GHCi if we want to.
 
 > module Main where
 
-Let's import the whole module,
+Let's import the whole module.
 
 > import Numeric.Funfem
+
+Using the tri3' function defined in the Numeric.Funfem.ShapeFunctions
+module (the derivative of the shape function), we can create a
+function to build the elementary stiffness matrix for each element:
+
+> elementaryStiffness :: Element -> Matrix
+> elementaryStiffness el = (transpose $ tri3' el) * (permeability `multSM` (tri3' el))
+>   where
+>     permeability = matPropertyFromName mat "permeability"
+>     mat = elemMaterial el
 
 and declare the main function as usual.
 
@@ -19,7 +29,7 @@ Now let's load some data. Funfem currently supports only JSON for its
 built-in data type. It will allow other kind of more friendly inputs,
 like Gmsh for example.  
 
->  f <- readFile "read-input.json"
+>  f <- readFile "hydraulics.json"
 
 Here we extract the data contained in the input file. Notice the use
 of the helper functions:
@@ -30,11 +40,13 @@ of the helper functions:
 >  let boundaries = boundariesFromInput i
 >  let nodes = nodesFromInput i
 
->  print elements
->  print materials
->  print boundaries
->  print nodes
+  print elements
+  print materials
+  print boundaries
+  print nodes
 
+>  let globalStiffness = toGlobalMatrix elementaryStiffness elements  
+>  print globalStiffness
 
 As this library is still work in progress, our example stops here at
 the moment. It will be wxtended as soon as the developments in the
@@ -44,8 +56,3 @@ library allow it.
 
 
 -- only here for development
-elementaryStiffness :: Element -> Matrix
-elementaryStiffness el = (transpose $ tri3' el) * (permeability `multSM` (tri3' el))
-  where
-    permeability = matPropertyFromName mat "permeability"
-    mat = elemMaterial el

@@ -55,6 +55,7 @@ elemToGlobal elemStiff el = indexToGlobal localIndices globalIndices matrix init
     localIndices = [(i,j) | i <- [1..nbNodes], j <- [1..nbNodes]]
     initialize = M.singleton (1,1) 0.0 :: Stiffness
 
+
 indexToGlobal :: [Index] -> [Index] -> Matrix -> Stiffness -> Stiffness
 indexToGlobal [] _ _ s = s  
 indexToGlobal _ [] _ s = s
