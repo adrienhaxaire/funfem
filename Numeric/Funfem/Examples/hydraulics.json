@@ -1,0 +1,42 @@
+{"nodes": [ 
+          {"coordinates": [0.0, 0.0], "number": 1},
+          {"coordinates": [1.0, 0.0], "number": 2},
+          {"coordinates": [1.0, 1.0], "number": 3},          
+          {"coordinates": [0.0, 1.0], "number": 4}
+          ],
+
+"materials": [
+             {"name": "sand",
+             "properties": [{"name": "permeability", "value": 1.0}],
+             "number": 1}
+             ],
+
+"elements": [
+            {"nodes": [          
+                      {"coordinates": [0.0, 0.0], "number": 1},
+                      {"coordinates": [1.0, 0.0], "number": 2},
+                      {"coordinates": [1.0, 1.0], "number": 3}
+                      ],
+             "number":1,
+             "material": {"name": "sand",
+                         "properties": [{"name": "permeability", "value": 1.0}],
+                         "number": 1}
+            },
+            {"nodes": [          
+                      {"coordinates": [1.0, 0.0], "number": 2},
+                      {"coordinates": [1.0, 1.0], "number": 3},
+                      {"coordinates": [0.0, 1.0], "number": 4}
+                      ],
+             "number":2,
+             "material": {"name": "sand",
+                         "properties": [{"name": "permeability", "value": 1.0}],
+                         "number": 1}
+            }
+            ],
+"boundaries": [
+              {"name": "Dirichlet", "node": {"coordinates": [0.0, 0.0], "number": 1}, "value": 10.0},
+              {"name": "Dirichlet", "node": {"coordinates": [1.0, 0.0], "number": 2}, "value": 10.0}
+              ]
+}
+
+
