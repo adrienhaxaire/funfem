@@ -14,11 +14,9 @@
 module Numeric.Funfem.BoundaryConditions where
 
 import Text.JSON
-import Data.Map as M
 import Data.List as L
 
 import Numeric.Funfem.Elements
-import Numeric.Funfem.Vector as V
 
 -- | Needs the list of nodes affected by the boundary conditions,
 -- i.e. no Neumann BC handled yet
@@ -50,19 +48,6 @@ bcValue (BoundaryCondition _ _ value) = value
 
 bcValues :: [BoundaryCondition] -> [Double]
 bcValues bcs = L.map bcValue bcs
-
-
-
--- | temporary building of the right hand side
-buildRHS :: [BoundaryCondition] -> Int -> Vector
-buildRHS bcs n = V.fromList $ [at i nvs | i <- [1..n]]
-  where
-    nodes = bcNodeNumbers bcs
-    values = bcValues bcs
-    nvs = M.fromList $ zip nodes values
-    
-at :: (Ord k, Fractional a) => k -> Map k a -> a
-at node candidates = case M.lookup node candidates of {Just val -> val; Nothing -> 0.0}
 
 
 -- [BoundaryCondition "Dirichlet" (Node (0.0,0.0) 1) 10.0, BoundaryCondition "Dirichlet" (Node (1.0,0.0) 2) 10.0]

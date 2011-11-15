@@ -11,12 +11,16 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Stiffnesses (toGlobalMatrix) where
+module Numeric.Funfem.Stiffnesses (
+  toGlobalMatrix
+  ,buildRHS
+  ) where
 
 import Data.List as L hiding (transpose)
 import Data.Map as M
 
 import Numeric.Funfem.Elements
+import Numeric.Funfem.BoundaryConditions
 import Numeric.Funfem.Vector as V 
 import Numeric.Funfem.Matrix 
 
@@ -27,6 +31,17 @@ type Stiffness = M.Map (Int,Int) Double
 -- stiffness constructor and the target list of elements
 toGlobalMatrix :: (Element -> Matrix) -> [Element] -> Matrix
 toGlobalMatrix elemStiff els = toMatrix $ toGlobal elemStiff els
+
+
+-- | temporary building of the right hand side
+buildRHS :: [BoundaryCondition] -> Int -> Vector
+buildRHS bcs n = V.fromList $ [at i nvs | i <- [1..n]]
+  where
+    nodes = bcNodeNumbers bcs
+    values = bcValues bcs
+    nvs = M.fromList $ zip nodes values
+    at i nvs = case M.lookup i nvs of {Just val -> val; Nothing -> 0.0}
+
 
 
 toGlobal :: (Element -> Matrix) -> [Element] ->  Stiffness

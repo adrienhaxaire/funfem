@@ -35,18 +35,20 @@ Here we extract the data contained in the input file. Notice the use
 of the helper functions:
 
 >  let i = inputFromString f
+
 >  let elements = elementsFromInput i    
->  let materials = materialsFromInput i
+>  let globalStiffness = toGlobalMatrix elementaryStiffness elements  
+>  print globalStiffness       
+
+
 >  let boundaries = boundariesFromInput i
 >  let nodes = nodesFromInput i
+>  let rhs = buildRHS boundaries (length nodes)
 
-  print elements
-  print materials
-  print boundaries
-  print nodes
+>  let x0 = genVector (length nodes) 0.0
 
->  let globalStiffness = toGlobalMatrix elementaryStiffness elements  
->  print globalStiffness
+>  let x = cg globalStiffness x0 rhs
+>  print x       
 
 As this library is still work in progress, our example stops here at
 the moment. It will be wxtended as soon as the developments in the
