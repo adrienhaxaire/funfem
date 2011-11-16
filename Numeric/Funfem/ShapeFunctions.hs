@@ -13,22 +13,19 @@
 
 module Numeric.Funfem.ShapeFunctions where
 
-import Data.List as L hiding (transpose)
-
 import Numeric.Funfem.Elements
-import Numeric.Funfem.Vector
+import Numeric.Funfem.Vector as V
 import Numeric.Funfem.Matrix
 
 -- | Interpolation function for 3-noded triangle
 tri3 :: Element -> Matrix
-tri3 el = fromVectors $ zipWith (*) coorsV shapes
+tri3 el = multSM (1/twoAreas) $ fromVectors [V.fromList n | n <- [n1,n2,n3]] 
   where
-    coors = [nodeCoordinates node | node <- elemNodes el]
-    coorsV = [fromList [1, fst cs, snd cs] | cs <- coors]        
-    coorsM = fromVectors coorsV
-    perms = [[1,2,3], [2,3,1], [3,1,2]]
-    shapes = [fromList $ L.map (/twoAreas) [det (butRowColumn 1 i coorsM) | i <- is] | is <- perms] 
-    twoAreas = det coorsM
+    [(x1,y1),(x2,y2),(x3,y3)] = [nodeCoordinates node | node <- elemNodes el]
+    twoAreas = (x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)
+    n1 = [x2*y3-x3*y2, y2-y3, x3-x2]
+    n2 = [x3*y1-x1*y3, y3-y1, x1-x3]
+    n3 = [x1*y2-x2*y1, y1-y2, x2-x1]
 
 -- | Derivative of the tri3 interpolation
 tri3' :: Element -> Matrix
