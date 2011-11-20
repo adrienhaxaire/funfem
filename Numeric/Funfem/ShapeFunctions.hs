@@ -29,6 +29,9 @@ tri3 el = multSM (1/twoAreas) $ fromVectors [V.fromList n | n <- [n1,n2,n3]]
 
 -- | Derivative of the tri3 interpolation
 tri3' :: Element -> Matrix
-tri3' el = transpose $ fromVectors $ [slice 1 2 v | v <- vs]
+tri3' el = fromVectors [bs,cs]
   where
-    vs = fromMatrix $ tri3 el
+    [(x1,y1),(x2,y2),(x3,y3)] = [nodeCoordinates node | node <- elemNodes el]
+    twoAreas = (x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)
+    bs = fromList [y2-y3, y3-y1, y1-y2]
+    cs = fromList [x3-x2, x1-x3, x2-x1]
