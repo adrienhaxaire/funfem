@@ -10,6 +10,7 @@ qc
 QC
 TAGS
 hydraulics
+octave-core
 
 # haddock, hlint
 doc/
