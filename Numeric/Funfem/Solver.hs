@@ -40,14 +40,12 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
 
 -- | LU decomposition and back substitution
 
--- divHead (r1:r2:rs) = r2 - map headRatios r1
-
 upper :: [[Double]] -> [[Double]]
 upper [] = []
-upper l = (L.head upped) : upper (L.tail minor)
+upper x = (L.head upped) : upper minored
   where
-    upped = up l
-    minor = [L.tail u | u <- upped]
+    upped = up x
+    minored = minor up x
 
 up :: [[Double]] -> [[Double]]
 up [] = []
@@ -59,11 +57,21 @@ up' r (l:ls) = zipWith (-) l (L.map (*h) r) : up' r ls
   where
     h = L.head l / L.head r 
     
-  
---lower
-  
-  
--- lij = aji/aii
+    
+lower :: [[Double]] -> [[Double]]
+lower [] = []
+lower m = [reverse l | l <- lowered]
+  where
+    lowered = reverse $ low $ L.transpose m
 
+low :: [[Double]] -> [[Double]]
+low [] = []
+low x = L.map (/h) (L.head x) : low minored
+  where
+    h = (L.head . L.head) x  
+    minored = minor id x
 
+minor :: ([a] -> [[b]]) -> [a] -> [[b]]
+minor _ [] = []
+minor f xs = L.tail [L.tail x | x <- f xs]
 
