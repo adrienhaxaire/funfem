@@ -42,21 +42,25 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
 
 -- divHead (r1:r2:rs) = r2 - map headRatios r1
 
+upper :: [[Double]] -> [[Double]]
 upper [] = []
 upper l = (L.head upped) : upper (L.tail minor)
   where
     upped = up l
     minor = [L.tail u | u <- upped]
 
+up :: [[Double]] -> [[Double]]
 up [] = []
 up (r:rs) = r : up' r rs 
 
+up' :: [Double] -> [[Double]] -> [[Double]]
 up' _ [] = []
 up' r (l:ls) = zipWith (-) l (L.map (*h) r) : up' r ls
   where
     h = L.head l / L.head r 
     
   
+--lower
   
   
 -- lij = aji/aii
