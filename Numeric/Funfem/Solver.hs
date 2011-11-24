@@ -38,8 +38,10 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
     z' = r'    
     p' = z'+ vmap (*beta) p
 
+
 -- | LU decomposition and back substitution
 
+-- stores only non zero values
 upper :: [[Double]] -> [[Double]]
 upper [] = []
 upper x = (L.head upped) : upper minored
@@ -58,6 +60,7 @@ up' r (l:ls) = zipWith (-) l (L.map (*h) r) : up' r ls
     h = L.head l / L.head r 
     
     
+-- stores only non zero values    
 lower :: [[Double]] -> [[Double]]
 lower [] = []
 lower m = [reverse l | l <- lowered]
@@ -71,7 +74,17 @@ low x = L.map (/h) (L.head x) : low minored
     h = (L.head . L.head) x  
     minored = minor id x
 
+
 minor :: ([a] -> [[b]]) -> [a] -> [[b]]
 minor _ [] = []
 minor f xs = L.tail [L.tail x | x <- f xs]
+
+
+findY :: [Double] -> [[Double]] -> [Double]
+findY _ [] = []
+findY b (l:ls) = (L.head row - rest) : findY b ls
+  where
+    row = zipWith (*) b l
+    rest = L.foldl' (+) 0 (L.tail row)
+    
 
