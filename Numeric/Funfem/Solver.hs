@@ -11,7 +11,10 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Solver where
+module Numeric.Funfem.Solver (
+  cg
+  ,luSolve
+  ) where
 
 import Numeric.Funfem.Vector
 import Numeric.Funfem.Matrix
@@ -39,7 +42,37 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
     p' = z'+ vmap (*beta) p
 
 
--- | LU decomposition and back substitution
+-- | Solves Ax = b using LU decomposition and substitutions.   
+luSolve :: Matrix -> Vector -> Vector
+luSolve m b = fromList $ findX (upper m') [] y 
+  where
+    m' = fromMatrix' m 
+    b' = fromVector b
+    y = findY (lower m') [] b'
+
+-- find y / Ly = b
+findY :: [[Double]] -> [Double] -> [Double] -> [Double]
+findY [] y _ = y
+findY _ y [] = y
+findY l [] b = findY (L.tail l) [1] (L.tail b)
+findY (l:ls) y (b:bs) = findY ls y' bs
+  where
+    y' = y L.++ [b - L.sum left]
+    left = zipWith (*) l y
+    
+
+-- find x / Ux = y
+findX :: [[Double]] -> [Double] -> [Double] -> [Double]    
+findX [] x _ = x
+findX u [] y = findX (L.init u) x0 (L.init y) 
+  where x0 = [L.last y / L.head (L.last u)] 
+findX us x ys = findX (L.init us) (x':x) (L.init ys)      
+  where
+    x' = (y - L.sum left) / uh  
+    left = L.tail $ zipWith (*) u (1:x)
+    y = L.last ys
+    u = L.last us
+    uh = L.head u 
 
 
 -- stores only non zero values
@@ -69,61 +102,25 @@ lower m = L.reverse . rearrange . low $ m
 
 rearrange :: [[Double]] -> [[Double]]
 rearrange [] = []
-rearrange m = (arrange $ m) : (rearrange $ minor' id m)
-    
-arrange = L.reverse . L.map (L.last) . L.transpose
-
+rearrange m = arrange m : rearrange (minor' id m)
+    where
+      arrange = L.reverse . L.map L.last . L.transpose
 
 
 low :: [[Double]] -> [[Double]]
 low [] = []
-low (l:ls) = (column (d:ds)) : minored
+low (l:ls) = L.map L.head (d:ds) : minored
   where
     h = L.head l 
     (d:ds) = (L.map . L.map) (/h) (l:ls)
     minored = low $ minor id $ up' d (d:ds)
-
-column [] = []
-column (l:ls) = L.head l : column ls  
 
 
 minor :: ([a] -> [[b]]) -> [a] -> [[b]]
 minor _ [] = []
 minor f xs = L.tail [L.tail x | x <- f xs]
 
--- minor' :: ([a] -> [[b]]) -> [a] -> [[b]]
+minor' :: ([a] -> [[b]]) -> [a] -> [[b]]
 minor' _ [] = []
 minor' f xs = L.init [L.init x | x <- f xs]
 
-
--- find y / Ly = b
-findY :: [[Double]] -> [Double] -> [Double] -> [Double]
-findY [] y _ = y
-findY (l:ls) [] (b:bs) = findY ls [1] bs
-findY (l:ls) y (b:bs) = findY ls y' bs
-  where
-    y' = y L.++ [b - L.sum left]
-    left = zipWith (*) l y
-    
-
--- find x / Ux = y
-findX :: [[Double]] -> [Double] -> [Double] -> [Double]    
-findX [] x _ = x
-findX u [] y = findX (L.init u) x0 (L.init y) 
-  where x0 = [(L.last y)/(L.head $ L.last u)] 
-findX us x ys = findX (L.init us) (x':x) (L.init ys)      
-  where
-    x' = (y - L.sum left) / uh  
-    left = L.tail $ zipWith (*) u (1:x)
-    y = L.last ys
-    u = L.last us
-    uh = L.head u 
-
-
--- | Solves Ax = b using LU decomposition    
-luSolve :: Matrix -> Vector -> Vector
-luSolve m b = fromList $ findX (upper m') [] y 
-  where
-    m' = fromMatrix' m 
-    b' = fromVector b
-    y = findY (lower m') [] b'
