@@ -44,7 +44,7 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
 -- stores only non zero values
 upper :: [[Double]] -> [[Double]]
 upper [] = []
-upper x = (L.head upped) : upper minored
+upper x = L.head upped : upper minored
   where
     upped = up x
     minored = minor up x
@@ -63,28 +63,63 @@ up' r (l:ls) = zipWith (-) l (L.map (*h) r) : up' r ls
 -- stores only non zero values    
 lower :: [[Double]] -> [[Double]]
 lower [] = []
-lower m = [reverse l | l <- lowered]
-  where
-    lowered = reverse $ low $ L.transpose m
+lower m = L.reverse . rearrange . low $ m
+
+
+rearrange :: [[Double]] -> [[Double]]
+rearrange [] = []
+rearrange m = (arrange $ m) : (rearrange $ minor' id m)
+    
+arrange = L.reverse . L.map (L.last) . L.transpose
+
+
 
 low :: [[Double]] -> [[Double]]
 low [] = []
-low x = L.map (/h) (L.head x) : low minored
+low (l:ls) = (column (d:ds)) : minored
   where
-    h = (L.head . L.head) x  
-    minored = minor id x
+    h = L.head l 
+    (d:ds) = (L.map . L.map) (/h) (l:ls)
+    minored = low $ minor id $ up' d (d:ds)
+
+column [] = []
+column (l:ls) = L.head l : column ls  
 
 
 minor :: ([a] -> [[b]]) -> [a] -> [[b]]
 minor _ [] = []
 minor f xs = L.tail [L.tail x | x <- f xs]
 
+-- minor' :: ([a] -> [[b]]) -> [a] -> [[b]]
+minor' _ [] = []
+minor' f xs = L.init [L.init x | x <- f xs]
 
+
+
+
+-- find y / Ly = b
 findY :: [Double] -> [[Double]] -> [Double]
 findY _ [] = []
 findY b (l:ls) = (L.head row - rest) : findY b ls
   where
     row = zipWith (*) b l
-    rest = L.foldl' (+) 0 (L.tail row)
+    rest = L.sum (L.tail row)
     
 
+-- find x / Ux = b
+findX :: [Double] -> [Double] -> [[Double]] -> [Double]    
+findX _ _ [] = []
+findX b y (u:us) = ((yi - L.sum row) / uii) : findX b y us
+  where
+    uii = L.head u
+    yi = y !! (L.length u -1)
+    row = zipWith (*) b (L.tail u)
+    
+-- | Solves Ax = b using LU decomposition    
+luSolve :: Matrix -> Vector -> Vector
+luSolve m b = fromList $ findX b' y (upper m')
+  where
+    m' = fromMatrix' m 
+    b' = fromVector b
+    y = findY b' (lower m')
+    
