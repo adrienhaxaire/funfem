@@ -41,6 +41,7 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
 
 -- | LU decomposition and back substitution
 
+
 -- stores only non zero values
 upper :: [[Double]] -> [[Double]]
 upper [] = []
@@ -95,31 +96,34 @@ minor' _ [] = []
 minor' f xs = L.init [L.init x | x <- f xs]
 
 
-
-
 -- find y / Ly = b
-findY :: [Double] -> [[Double]] -> [Double]
-findY _ [] = []
-findY b (l:ls) = (L.head row - rest) : findY b ls
+findY :: [[Double]] -> [Double] -> [Double] -> [Double]
+findY [] y _ = y
+findY (l:ls) [] (b:bs) = findY ls [1] bs
+findY (l:ls) y (b:bs) = findY ls y' bs
   where
-    row = zipWith (*) b l
-    rest = L.sum (L.tail row)
+    y' = y L.++ [b - L.sum left]
+    left = zipWith (*) l y
     
 
--- find x / Ux = b
-findX :: [Double] -> [Double] -> [[Double]] -> [Double]    
-findX _ _ [] = []
-findX b y (u:us) = ((yi - L.sum row) / uii) : findX b y us
+-- find x / Ux = y
+findX :: [[Double]] -> [Double] -> [Double] -> [Double]    
+findX [] x _ = x
+findX u [] y = findX (L.init u) x0 (L.init y) 
+  where x0 = [(L.last y)/(L.head $ L.last u)] 
+findX us x ys = findX (L.init us) (x':x) (L.init ys)      
   where
-    uii = L.head u
-    yi = y !! (L.length u -1)
-    row = zipWith (*) b (L.tail u)
-    
+    x' = (y - L.sum left) / uh  
+    left = L.tail $ zipWith (*) u (1:x)
+    y = L.last ys
+    u = L.last us
+    uh = L.head u 
+
+
 -- | Solves Ax = b using LU decomposition    
 luSolve :: Matrix -> Vector -> Vector
-luSolve m b = fromList $ findX b' y (upper m')
+luSolve m b = fromList $ findX (upper m') [] y 
   where
     m' = fromMatrix' m 
     b' = fromVector b
-    y = findY b' (lower m')
-    
+    y = findY (lower m') [] b'
