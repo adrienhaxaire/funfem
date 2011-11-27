@@ -34,6 +34,7 @@ fromBoundaryConditions bcs = M.fromList $ zip nodes values
     nodes = bcNodeNumbers bcs
     values = bcValues bcs
     
+
 at :: RHS -> Int -> Double
 at r i = fromMaybe 0.0 (M.lookup i r)
 
