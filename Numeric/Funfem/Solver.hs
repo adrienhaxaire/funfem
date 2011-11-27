@@ -21,9 +21,6 @@ import Numeric.Funfem.Matrix
 
 import qualified Data.List as L
 
-eps :: Double
-eps = 1.0e-3
-
 -- | Solves Ax = b. Arguments are passed in this order. No first guess on x is made, so 
 -- it should be initialized first.
 cg :: Matrix -> Vector -> Vector -> Vector
@@ -40,6 +37,9 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
     r' = r - vmap (*alpha) (multMV a p)
     z' = r'    
     p' = z'+ vmap (*beta) p
+
+eps :: Double
+eps = 1.0e-3
 
 
 -- | Solves Ax = b using LU decomposition and substitutions.   
@@ -77,7 +77,7 @@ findX us x ys = findX (L.init us) (x':x) (L.init ys)
     uh = L.head u 
 
 
--- stores only non zero values
+-- stores only upper values
 upper :: [[Double]] -> [[Double]]
 upper [] = []
 upper x = L.head upped : upper minored
@@ -96,7 +96,7 @@ up' r (l:ls) = zipWith (-) l (L.map (*h) r) : up' r ls
     h = L.head l / L.head r 
     
     
--- stores only non zero values    
+-- stores only lower values    
 lower :: [[Double]] -> [[Double]]
 lower [] = []
 lower m = L.reverse . rearrange . low $ m
