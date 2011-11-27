@@ -17,6 +17,7 @@ module Numeric.Funfem.Stiffnesses (
   ,toGlobalMatrix
   ,setStiffnessRow
   ,setStiffness
+  ,applyBoundaryConditions
   ) where
 
 import Data.List as L hiding (transpose)
@@ -25,6 +26,8 @@ import Data.Maybe (fromMaybe)
 
 import Numeric.Funfem.Elements
 import qualified Numeric.Funfem.Matrix as FM
+import Numeric.Funfem.BoundaryConditions
+
 
 type Index = (Int,Int)
 type Stiffness = M.Map (Int,Int) Double 
@@ -70,11 +73,13 @@ addToStiffness (i,j) val s
   | otherwise = M.insertWith' (+) (i,j) val s 
 
 
-{-
 applyBoundaryConditions :: [BoundaryCondition] -> Stiffness -> Stiffness
 applyBoundaryConditions [] s = s
-applyBoundaryConditions ()
--}
+applyBoundaryConditions (bc:bcs) s = applyBoundaryConditions bcs s'
+  where
+    s' = setStiffness (row,row) 1.0 $ setStiffnessRow (row,1) 0.0 s
+    row = nodeNumber $ bcNode bc
+
 
 setStiffnessRow :: Index -> Double -> Stiffness -> Stiffness
 setStiffnessRow (row,col) val s 
