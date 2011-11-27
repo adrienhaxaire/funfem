@@ -39,6 +39,8 @@ of the helper functions:
 >  let elements = elementsFromInput i    
 >  let boundaries = boundariesFromInput i
 
+>  print elements
+
 Funfem provides a wrapper for simple cases like this one. It just
 needs the function to build the elementary stiffnesses, in our case
 the function elementaryStiffness defined above, the elements and the

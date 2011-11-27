@@ -19,6 +19,7 @@ module Numeric.Funfem.Stiffnesses (
   ,setStiffness
   ,applyBoundaryConditions
   ,buildSystem
+--  ,elementaryStiffness
   ) where
 
 import Data.List as L hiding (transpose)
@@ -30,6 +31,8 @@ import qualified Numeric.Funfem.Matrix as FM
 import qualified Numeric.Funfem.Vector as V
 import Numeric.Funfem.BoundaryConditions
 import Numeric.Funfem.RightHandSide (buildRHS)
+
+--import Numeric.Funfem.ShapeFunctions
 
 type Index = (Int,Int)
 type Stiffness = M.Map (Int,Int) Double 
@@ -55,8 +58,10 @@ at index s = fromMaybe 0.0 $ M.lookup index s
 size :: Stiffness -> Int    
 size s = uncurry max (fst $ M.findMax s) 
 
+
 toGlobal :: (Element -> FM.Matrix) -> [Element] ->  Stiffness
-toGlobal elemStiff els = M.unions $ L.map (elemToGlobal elemStiff) els
+toGlobal elemStiff els = M.unionsWith (+) $ L.map (elemToGlobal elemStiff) els
+
 
 elemToGlobal :: (Element -> FM.Matrix) -> Element -> Stiffness
 elemToGlobal elemStiff el = addToGlobal localIndices globalIndices matrix initialize
@@ -104,3 +109,15 @@ setStiffness (i,j) val s
   | j <= 0    = s
   | otherwise = M.insert (i,j) val s 
 
+
+{- here for debugging
+
+elementaryStiffness :: Element -> FM.Matrix
+elementaryStiffness el = (FM.transpose $ tri3' el) * (permeability `FM.multSM` (tri3' el))
+  where
+    permeability = matPropertyFromName mat "permeability"
+    mat = elemMaterial el
+
+-- [Element [Node (0.0,0.0) 1,Node (1.0,0.0) 2,Node (1.0,1.0) 3] 1 (Material "sand" [Property "permeability" 1.0] 1),Element [Node (1.0,1.0) 3,Node (0.0,1.0) 4,Node (0.0,0.0) 1] 2 (Material "sand" [Property "permeability" 1.0] 1)]
+
+-}
