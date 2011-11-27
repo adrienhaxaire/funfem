@@ -44,17 +44,19 @@ cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
 
 -- | Solves Ax = b using LU decomposition and substitutions.   
 luSolve :: Matrix -> Vector -> Vector
-luSolve m b = fromList $ findX (upper m') [] y 
+luSolve m b = fromList $ findX upped [] $ findY lowered [] b' 
   where
+    upped = upper m'
+    lowered = lower m'
     m' = fromMatrix' m 
     b' = fromVector b
-    y = findY (lower m') [] b'
+
 
 -- find y / Ly = b
 findY :: [[Double]] -> [Double] -> [Double] -> [Double]
 findY [] y _ = y
 findY _ y [] = y
-findY l [] b = findY (L.tail l) [1] (L.tail b)
+findY (_:ls) [] (b:bs) = findY ls [b] bs
 findY (l:ls) y (b:bs) = findY ls y' bs
   where
     y' = y L.++ [b - L.sum left]
