@@ -37,11 +37,11 @@ instance JSON BoundaryCondition where
 bcName :: BoundaryCondition -> Name
 bcName (BoundaryCondition name _ _) = name
 
-bcNodes :: BoundaryCondition -> Node
-bcNodes (BoundaryCondition _ node _) = node
+bcNode :: BoundaryCondition -> Node
+bcNode (BoundaryCondition _ node _) = node
 
 bcNodeNumbers :: [BoundaryCondition] -> [Int]   
-bcNodeNumbers bcs = L.map nodeNumber $ L.map bcNodes bcs
+bcNodeNumbers bcs = L.map nodeNumber $ L.map bcNode bcs
 
 bcValue :: BoundaryCondition -> Value
 bcValue (BoundaryCondition _ _ value) = value
