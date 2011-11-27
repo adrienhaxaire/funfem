@@ -18,6 +18,7 @@ module Numeric.Funfem.Stiffnesses (
   ,setStiffnessRow
   ,setStiffness
   ,applyBoundaryConditions
+  ,buildSystem
   ) where
 
 import Data.List as L hiding (transpose)
@@ -26,11 +27,19 @@ import Data.Maybe (fromMaybe)
 
 import Numeric.Funfem.Elements
 import qualified Numeric.Funfem.Matrix as FM
+import qualified Numeric.Funfem.Vector as V
 import Numeric.Funfem.BoundaryConditions
-
+import Numeric.Funfem.RightHandSide (buildRHS)
 
 type Index = (Int,Int)
 type Stiffness = M.Map (Int,Int) Double 
+
+-- | Wrapper to quickly build a system 
+buildSystem :: (Element -> FM.Matrix) -> [Element] -> [BoundaryCondition] -> (FM.Matrix, V.Vector)
+buildSystem elemStiff els bcs = (stiffness, rhs)
+  where
+    stiffness = toMatrix $ applyBoundaryConditions bcs $ toGlobal elemStiff els
+    rhs = buildRHS bcs (fst $ FM.dim stiffness)
 
 -- | Assembles the global stiffness matrix from the elementary
 -- stiffness constructor and the target list of elements
