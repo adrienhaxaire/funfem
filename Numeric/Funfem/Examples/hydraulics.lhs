@@ -37,27 +37,31 @@ of the helper functions:
 >  let i = inputFromString f
 
 >  let elements = elementsFromInput i    
-       
 >  let boundaries = boundariesFromInput i
+
+Funfem provides a wrapper for simple cases like this one. It just needs the function to build the elementary stiffnesses, in our case the function elementaryStiffness defined above, the elements and the boundary conditions (currently only Dirichlet boundary conditions are supported). 
+
+>  let (globStiff,rhs) = buildSystem elementaryStiffness elements boundaries
+
+Solve the system using LU decomposition with forward and backward substitutions:
+
+>  let x = luSolve globStiff rhs
+>  print x
+
+And that's it! Ok, now we need to pretty print the output, etc, but at least, in 16 lines of code we have a simple case scenario.
+
+The following is for testing purposes only. You can have a look at the documentation and/or the source code for more information.
+
 >  let nodes = nodesFromInput i
-
 >  let s0 = toGlobal elementaryStiffness elements
-
->  let rhs = buildRHS boundaries (length nodes)
-       
+>  let rhs' = buildRHS boundaries (length nodes)
 >  let s = applyBoundaryConditions boundaries s0
-       
 >  let stiffness = toMatrix s
 >  print stiffness
 
->  let x = luSolve stiffness rhs
->  print x       
-
-As this library is still work in progress, our example stops here at
-the moment. It will be wxtended as soon as the developments in the
-library allow it.
+>  let x' = luSolve stiffness rhs'
+>  print x'       
 
 
 
 
--- only here for development
