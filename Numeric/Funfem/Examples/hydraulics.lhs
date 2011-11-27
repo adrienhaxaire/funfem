@@ -37,25 +37,21 @@ of the helper functions:
 >  let i = inputFromString f
 
 >  let elements = elementsFromInput i    
->  print elements       
        
 >  let boundaries = boundariesFromInput i
 >  let nodes = nodesFromInput i
 
->  let s = toGlobal elementaryStiffness elements
+>  let s0 = toGlobal elementaryStiffness elements
 
 >  let rhs = buildRHS boundaries (length nodes)
        
->  let s' = setStiffnessRow 1 0.0 s
->  let s = setStiffness (1,1) 1.0 s'     
-  
->  let stiffness = toMatrix $ adaptGlobalToRHS rhs s
+>  let s = applyBoundaryConditions boundaries s0
+       
+>  let stiffness = toMatrix s
 >  print stiffness
 
->  let x0 = genVector (length nodes) 0.0
-
-  let x = cg stiffness x0 rhs
-  print x       
+>  let x = luSolve stiffness rhs
+>  print x       
 
 As this library is still work in progress, our example stops here at
 the moment. It will be wxtended as soon as the developments in the
