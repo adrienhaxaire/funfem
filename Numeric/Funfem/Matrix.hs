@@ -39,6 +39,9 @@ fromMatrix (Matrix m) = m
 fromMatrix' :: Matrix -> [[Double]]
 fromMatrix' m = [fromVector v | v <- fromMatrix m]
 
+fromLists :: [[Double]] -> Matrix
+fromLists lists = fromVectors [V.fromList l | l <- lists]
+
 genMatrix :: Int -> Double -> Matrix
 genMatrix n d = fromVectors $ take n (repeat (V.genVector n d))
 
