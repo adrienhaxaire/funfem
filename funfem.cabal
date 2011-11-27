@@ -29,6 +29,7 @@ library
                    Numeric.Funfem.ShapeFunctions,
                    Numeric.Funfem.BoundaryConditions,
                    Numeric.Funfem.Stiffnesses,
+                   Numeric.Funfem.RightHandSide,
                    Numeric.Funfem.Input
 
 

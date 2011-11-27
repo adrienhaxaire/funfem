@@ -7,6 +7,7 @@ module Numeric.Funfem (
   ,module Numeric.Funfem.BoundaryConditions
   ,module Numeric.Funfem.ShapeFunctions
   ,module Numeric.Funfem.Stiffnesses
+  ,module Numeric.Funfem.RightHandSide
   ) where
 
 import Numeric.Funfem.Elements
@@ -17,3 +18,4 @@ import Numeric.Funfem.Solver
 import Numeric.Funfem.BoundaryConditions
 import Numeric.Funfem.ShapeFunctions
 import Numeric.Funfem.Stiffnesses
+import Numeric.Funfem.RightHandSide
