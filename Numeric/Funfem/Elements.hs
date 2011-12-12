@@ -20,14 +20,9 @@ type Name = String
 type Value = Double
 
 -- Nodes
-data Node = Node Coordinates Number
+data Node = Node {nodeCoordinates :: Coordinates 
+                 ,nodeNumber :: Number}
           deriving (Eq, Ord, Show)
-
-nodeNumber :: Node -> Number
-nodeNumber (Node _ number) = number
-
-nodeCoordinates :: Node -> Coordinates
-nodeCoordinates (Node coordinates _ ) = coordinates 
 
 instance JSON Node where
   readJSON object = do 
@@ -39,18 +34,10 @@ instance JSON Node where
                                           ,("number", showJSON number)]
 
 -- Elements
-data Element = Element [Node] Number Material
+data Element = Element {elemNodes :: [Node] 
+                       ,elemNumber :: Number 
+                       ,elemMaterial :: Material}
              deriving (Eq, Ord, Show)
-
-elemNodes :: Element -> [Node]
-elemNodes (Element nodes _ _) = nodes
-
-elemNumber :: Element -> Number
-elemNumber (Element _ number _) = number
-
-elemMaterial :: Element -> Material
-elemMaterial (Element _ _ mat) = mat
-
 
 instance JSON Element where
   readJSON object = do
@@ -66,7 +53,8 @@ instance JSON Element where
 -- Materials
 
 -- | Property data type to simplify creation of a Material data type
-data Property = Property Name Value
+data Property = Property {propName :: Name
+                         ,propValue :: Value}
               deriving (Eq, Ord, Show)
 
 instance JSON Property where
@@ -78,14 +66,9 @@ instance JSON Property where
   showJSON (Property name value) = makeObj [("name", showJSON name)
                                             ,("value", showJSON value)]
 
-propValue :: Property -> Value
-propValue (Property _ value) = value
-
-propName :: Property -> Name
-propName (Property name _) = name
-
-
-data Material = Material Name [Property] Number
+data Material = Material {matName :: Name
+                         ,matProperties :: [Property]
+                         ,matNumber :: Number}
               deriving (Eq, Ord, Show)
                        
 instance JSON Material where
@@ -98,15 +81,6 @@ instance JSON Material where
   showJSON (Material name properties number) = makeObj [("name", showJSON name)
                                                        ,("properties", showJSON properties)
                                                        ,("number", showJSON number)]
-
-matName :: Material -> Name
-matName (Material name _ _) = name
-
-matProperties :: Material -> [Property]
-matProperties (Material _ properties _) = properties
-
-matNumber :: Material -> Number
-matNumber (Material _ _ number) = number
 
 matFromName :: Name -> [Material] -> Material
 matFromName _ [] = Material "Null" [] 0        -- should handle it in a better way
