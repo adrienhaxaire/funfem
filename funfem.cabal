@@ -11,26 +11,19 @@ License:            BSD3
 License-file:       LICENSE
 Author:             Adrien Haxaire
 Maintainer:         Adrien Haxaire <adrien@funfem.org>
-Copyright:          (c) 2011 Adrien Haxaire
+Copyright:          (c) 2012 Adrien Haxaire
 Build-Type:         Simple
 cabal-version:      >= 1.2.0
 library
   build-depends:   
                    base == 4.*,
-                   json >= 0.4.4,
+                   vector >= 0.9.1,
                    containers >= 0.4.0.0
 
   exposed-modules: 
                    Numeric.Funfem,
                    Numeric.Funfem.Elements,
-                   Numeric.Funfem.Vector,
-                   Numeric.Funfem.Matrix,
                    Numeric.Funfem.Solver,
-                   Numeric.Funfem.ShapeFunctions,
-                   Numeric.Funfem.BoundaryConditions,
-                   Numeric.Funfem.Stiffnesses,
-                   Numeric.Funfem.RightHandSide,
-                   Numeric.Funfem.Input
-
+                   Numeric.Funfem.Algebra
 
   ghc-options:     -Wall -O2

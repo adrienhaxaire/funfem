@@ -18,8 +18,6 @@ module Numeric.Funfem.Solver (
 import qualified Data.Vector as V
 import Numeric.Funfem.Algebra as A
 
-import qualified Data.List as L
-
 -- | Solves Ax = b. Arguments are passed in this order. No first guess on x is made, so 
 -- it should be initialized first.
 cg :: Matrix -> Vector -> Vector

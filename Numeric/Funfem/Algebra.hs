@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 ---------------------------------------------------------------------------------- 
 -- |
@@ -22,7 +23,7 @@ type Vector = V.Vector Double
 instance Num Vector where
   negate = V.map negate 
   abs = V.map abs
-  fromInteger n = undefined
+  fromInteger = undefined
   signum = V.map signum 
   (+) = V.zipWith (+)
   (*) = V.zipWith (*)
@@ -69,7 +70,7 @@ multMM m n = V.map row m
 instance Num Matrix where
   negate = V.map negate 
   abs = V.map abs
-  fromInteger n = undefined
+  fromInteger = undefined
   signum = V.map signum 
   (+) = V.zipWith (+)
   (*) = multMM
