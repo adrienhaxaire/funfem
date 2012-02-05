@@ -1,7 +1,9 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Matrix
--- Copyright : (c) Adrien Haxaire 2011
+-- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
 -- Maintainer : Adrien Haxaire <adrien@funfem.org>
@@ -13,13 +15,46 @@
 
 module Numeric.Funfem.Matrix where
 
-import Data.List as L
+import qualified Data.Vector as V
 
-import Numeric.Funfem.Vector as V
+type Vector = V.Vector Double
 
-data Matrix = Matrix [Vector]
-            deriving (Eq, Ord, Show)
+instance Num Vector where
+  negate = V.map negate 
+  abs = V.map abs
+  fromInteger n = undefined
+  signum = V.map signum 
+  (+) = V.zipWith (+)
+  (*) = V.zipWith (*)
 
+dotProd :: Vector -> Vector -> Double
+dotProd v w = V.sum $ V.zipWith (*) v w
+
+(.*) :: Vector -> Vector -> Double
+v .* w = V.sum $ V.zipWith (*) v w
+
+
+type Matrix = V.Vector Vector 
+
+transpose :: Matrix -> Matrix
+transpose m = V.cons (V.map V.head m) (transpose $ V.map V.tail m)
+
+
+instance Num Matrix where
+  negate = V.map negate 
+  abs = V.map abs
+  fromInteger n = undefined
+  signum = V.map signum 
+  (+) = V.zipWith (+)
+  (*) = V.zipWith (*)
+
+
+-- instance Num Matrix where
+  
+
+
+
+{-
 instance Num Matrix where
   negate (Matrix a) = Matrix [-a' | a' <- a]
   abs (Matrix a) = Matrix [abs a' | a' <- a]
@@ -30,10 +65,10 @@ instance Num Matrix where
     where
       bt = L.map V.fromList (L.transpose [fromVector v | v <- b])
 
-fromVectors :: [Vector] -> Matrix
+fromVectors :: [V.Vector] -> Matrix
 fromVectors = Matrix
 
-fromMatrix :: Matrix -> [Vector]
+fromMatrix :: Matrix -> [V.Vector]
 fromMatrix (Matrix m) = m
 
 fromMatrix' :: Matrix -> [[Double]]
@@ -51,10 +86,10 @@ dim m = (size $ L.head $ fromMatrix m, length $ fromMatrix m)
 transpose :: Matrix -> Matrix
 transpose m = fromVectors [V.fromList l | l <- L.transpose $ fromMatrix' m]  
 
-tensorProduct :: Vector -> Vector -> Matrix
+tensorProduct :: V.Vector -> V.Vector -> Matrix
 tensorProduct vs ws = fromVectors [V.map (*v) ws | v <- fromVector vs]
 
-multMV :: Matrix -> Vector -> Vector
+multMV :: Matrix -> V.Vector -> Vector
 {-# INLINE multMV #-}
 multMV m v = V.fromList $ L.map (.* v) (fromMatrix m) 
 
@@ -137,3 +172,4 @@ insert f s (i,j) = e
     (rows,cols) = dim f
     e = extract (rows-i) (cols-j) s (i,j)
 
+-}

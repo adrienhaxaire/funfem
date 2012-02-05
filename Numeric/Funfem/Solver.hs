@@ -1,7 +1,7 @@
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Solver
--- Copyright : (c) Adrien Haxaire 2011
+-- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
 -- Maintainer : Adrien Haxaire <adrien@funfem.org>
@@ -13,7 +13,6 @@
 
 module Numeric.Funfem.Solver (
   cg
-  ,luSolve
   ) where
 
 import Numeric.Funfem.Vector
