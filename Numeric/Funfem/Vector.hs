@@ -30,10 +30,10 @@ fromVector :: Vector -> [Double]
 fromVector (Vector v) = v
 
 fromList :: [Double] -> Vector 
-fromList v = Vector v
+fromList = Vector
 
 genVector :: Int -> Double -> Vector
-genVector n d = fromList (take n (repeat d)) 
+genVector n d = fromList $ replicate n d 
 
 head :: Vector -> Double
 head = L.head . fromVector
@@ -51,22 +51,22 @@ slice :: Int -> Int -> Vector -> Vector
 slice b e v = fromList $ take (e-b+1) $ drop (b-1) $ fromVector v
 
 butSlice :: Int -> Int -> Vector -> Vector
-butSlice b e v = fromList $ (pre L.++ post)
+butSlice b e v = fromList (pre L.++ post)
   where
     pre = take (b-1) $ fromVector v
     post = drop e $ fromVector v
 
 -- | Unsafe element accessor
 (!) :: Vector -> Int -> Double
-v ! n = (fromVector v) L.!! n
+v ! n = fromVector v L.!! n
 
 size :: Vector -> Int
 {-# INLINE size #-}
 size = length . fromVector
 
-dot_product :: Vector -> Vector -> Double
-{-# INLINE dot_product #-}
-dot_product v1 v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
+dotProduct :: Vector -> Vector -> Double
+{-# INLINE dotProduct #-}
+dotProduct v1 v2 = L.foldl' (+) 0 $ fromVector (v1*v2)
 
 -- | Infix dot product 
 (.*) :: Vector -> Vector -> Double

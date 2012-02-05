@@ -33,4 +33,4 @@ library
                    Numeric.Funfem.Input
 
 
-  ghc-options:     -Wall
+  ghc-options:     -Wall -O2

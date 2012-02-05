@@ -15,10 +15,11 @@ module (the derivative of the shape function), we can create a
 function to build the elementary stiffness matrix for each element:
 
 > elementaryStiffness :: Element -> Matrix
-> elementaryStiffness el = (transpose $ tri3' el) * (permeability `multSM` (tri3' el))
+> elementaryStiffness el = (transpose $ tri3' el) * ((surf * permeability) `multSM` (tri3' el))
 >   where
 >     permeability = matPropertyFromName mat "permeability"
 >     mat = elemMaterial el
+>     surf = tri3surface el
 
 and declare the main function as usual.
 
@@ -39,7 +40,6 @@ of the helper functions:
 >  let elements = elementsFromInput i    
 >  let boundaries = boundariesFromInput i
 
->  print elements
 
 Funfem provides a wrapper for simple cases like this one. It just
 needs the function to build the elementary stiffnesses, in our case
@@ -48,6 +48,7 @@ boundary conditions (currently only Dirichlet boundary conditions are
 supported).
 
 >  let (globStiff,rhs) = buildSystem elementaryStiffness elements boundaries
+>  print globStiff
 
 Solve the system using LU decomposition with forward and backward substitutions:
 
@@ -60,15 +61,15 @@ least, in 16 lines of code we have a simple case scenario.
 The following is for testing purposes only. You can have a look at the
 documentation and/or the source code for more information.
 
->  let nodes = nodesFromInput i
->  let s0 = toGlobal elementaryStiffness elements
->  let rhs' = buildRHS boundaries (length nodes)
->  let s = applyBoundaryConditions boundaries s0
->  let stiffness = toMatrix s
->  print stiffness
+  let nodes = nodesFromInput i
+  let s0 = toGlobal elementaryStiffness elements
+  let rhs' = buildRHS boundaries (length nodes)
+  let s = applyBoundaryConditions boundaries s0
+  let stiffness = toMatrix s
+  print stiffness
 
->  let x' = luSolve stiffness rhs'
->  print x'       
+  let x' = luSolve stiffness rhs'
+  print x'       
 
 
 

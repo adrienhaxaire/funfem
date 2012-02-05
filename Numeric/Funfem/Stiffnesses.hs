@@ -42,6 +42,7 @@ buildSystem :: (Element -> FM.Matrix) -> [Element] -> [BoundaryCondition] -> (FM
 buildSystem elemStiff els bcs = (stiffness, rhs)
   where
     stiffness = toMatrix $ applyBoundaryConditions bcs $ toGlobal elemStiff els
+--    stiffness = toMatrix $ toGlobal elemStiff els
     rhs = buildRHS bcs (fst $ FM.dim stiffness)
 
 -- | Assembles the global stiffness matrix from the elementary
@@ -58,10 +59,8 @@ at index s = fromMaybe 0.0 $ M.lookup index s
 size :: Stiffness -> Int    
 size s = uncurry max (fst $ M.findMax s) 
 
-
 toGlobal :: (Element -> FM.Matrix) -> [Element] ->  Stiffness
 toGlobal elemStiff els = M.unionsWith (+) $ L.map (elemToGlobal elemStiff) els
-
 
 elemToGlobal :: (Element -> FM.Matrix) -> Element -> Stiffness
 elemToGlobal elemStiff el = addToGlobal localIndices globalIndices matrix initialize

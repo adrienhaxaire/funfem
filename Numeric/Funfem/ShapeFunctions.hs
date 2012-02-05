@@ -35,3 +35,8 @@ tri3' el = fromVectors [bs,cs]
     twoAreas = (x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)
     bs = fromList [y2-y3, y3-y1, y1-y2]
     cs = fromList [x3-x2, x1-x3, x2-x1]
+
+tri3surface :: Element -> Double
+tri3surface el = 0.5 * ((x2-x1) * (y3-y1) - (x3-x1) * (y2-y1))
+  where
+    [(x1,y1),(x2,y2),(x3,y3)] = [nodeCoordinates node | node <- elemNodes el]

@@ -84,12 +84,12 @@ instance JSON Material where
 
 matFromName :: Name -> [Material] -> Material
 matFromName _ [] = Material "Null" [] 0        -- should handle it in a better way
-matFromName n (m:ms) = if (matName m == n) 
+matFromName n (m:ms) = if matName m == n 
                                then m
                                else matFromName n ms
 
 matPropertyFromName :: Material -> String -> Double
 matPropertyFromName mat name = propValue $ head property
-  where property = filter (\n -> (propName n) == name) (matProperties mat)
+  where property = filter (\n -> propName n == name) (matProperties mat)
 
 
