@@ -52,7 +52,7 @@ nullMatrix = V.null . V.head
 
 transpose :: Matrix -> Matrix
 transpose m | nullMatrix m = V.empty
-            | otherwise    = V.fromList [headColumn m] V.++ transpose $ tailColumns m
+            | otherwise    = V.fromList [headColumn m] V.++ transpose (tailColumns m)
 
 multMV :: Matrix -> Vector -> Vector
 multMV m v = V.map (dotProd v) m
