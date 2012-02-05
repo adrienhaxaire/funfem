@@ -33,6 +33,9 @@ dotProd v w = V.sum $ V.zipWith (*) v w
 (.*) :: Vector -> Vector -> Double
 v .* w = V.sum $ V.zipWith (*) v w
 
+norm :: Vector -> Double
+norm v = sqrt $ v .* v
+
 type Matrix = V.Vector Vector 
 
 headColumn :: Matrix -> Vector
