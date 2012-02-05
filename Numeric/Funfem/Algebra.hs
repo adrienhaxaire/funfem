@@ -1,6 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Algebra
@@ -14,69 +11,13 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Algebra where
+module Numeric.Funfem.Algebra (
+       module Numeric.Funfem.Algebra.Vector
+       ,module Numeric.Funfem.Algebra.Matrix
+       ,module Numeric.Funfem.Algebra.Solver
+       ) where
 
-import qualified Data.Vector as V
+import Numeric.Funfem.Algebra.Vector
+import Numeric.Funfem.Algebra.Matrix
+import Numeric.Funfem.Algebra.Solver
 
-type Vector = V.Vector Double
-
-instance Num Vector where
-  negate = V.map negate 
-  abs = V.map abs
-  fromInteger = undefined
-  signum = V.map signum 
-  (+) = V.zipWith (+)
-  (*) = V.zipWith (*)
-
-dotProd :: Vector -> Vector -> Double
-dotProd v w = V.sum $ V.zipWith (*) v w
-
-(.*) :: Vector -> Vector -> Double
-v .* w = V.sum $ V.zipWith (*) v w
-
-norm :: Vector -> Double
-norm v = sqrt $ v .* v
-
-type Matrix = V.Vector Vector 
-
-headColumn :: Matrix -> Vector
-headColumn = V.map V.head
-
-tailColumns :: Matrix -> Matrix
-tailColumns = V.map V.tail
-
-headRow :: Vector -> Double
-headRow = V.head
-
-tailRows :: Vector -> Vector
-tailRows = V.tail
-
-nullMatrix :: Matrix -> Bool
-nullMatrix = V.null . V.head 
-
-transpose :: Matrix -> Matrix
-transpose m | nullMatrix m = V.empty
-            | otherwise    = V.fromList [headColumn m] V.++ transpose (tailColumns m)
-
-multMV :: Matrix -> Vector -> Vector
-multMV m v = V.map (dotProd v) m
-
-multMM :: Matrix -> Matrix -> Matrix
-multMM m n = V.map row m 
-  where
-    row r = V.map (dotProd r) tn
-    tn = transpose n
-
-instance Num Matrix where
-  negate = V.map negate 
-  abs = V.map abs
-  fromInteger = undefined
-  signum = V.map signum 
-  (+) = V.zipWith (+)
-  (*) = multMM
-
-dim :: Matrix -> (Int, Int)
-dim m = (V.length m,V.length $ V.head m)
-
-isSquare :: Matrix -> Bool
-isSquare m = let (rows, cols) = dim m in rows == cols
