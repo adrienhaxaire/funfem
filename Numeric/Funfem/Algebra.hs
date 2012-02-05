@@ -50,12 +50,10 @@ tailRows = V.tail
 nullMatrix :: Matrix -> Bool
 nullMatrix = V.null . V.head 
 
--- Need to check length to avoid empty vectors in the end
 transpose :: Matrix -> Matrix
-transpose m | nullMatrix m = m
-            | V.length (V.head m) > 1 = V.cons (headColumn m) (transpose $ tailColumns m)
-            | otherwise = V.fromList [headColumn m]                        
-            
+transpose m | nullMatrix m = V.empty
+            | otherwise    = V.fromList [headColumn m] V.++ transpose $ tailColumns m
+
 multMV :: Matrix -> Vector -> Vector
 multMV m v = V.map (dotProd v) m
 
