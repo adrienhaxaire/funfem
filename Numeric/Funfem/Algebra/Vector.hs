@@ -1,4 +1,5 @@
 {-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Vector

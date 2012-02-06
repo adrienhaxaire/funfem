@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances #-}
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Solver
@@ -21,15 +20,6 @@ import qualified Data.Vector as V
 
 import Numeric.Funfem.Algebra.Vector
 import Numeric.Funfem.Algebra.Matrix
-
-
-instance Num Matrix where
-  negate = V.map negate 
-  abs = V.map abs
-  fromInteger = undefined
-  signum = V.map signum 
-  (+) = V.zipWith (+)
-  (*) = multMM
 
 -- | Solves Ax = b.
 cg :: Matrix -> Vector -> Vector

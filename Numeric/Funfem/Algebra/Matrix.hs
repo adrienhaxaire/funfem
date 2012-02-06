@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Matrix
@@ -51,3 +53,12 @@ dim m = (V.length m,V.length $ V.head m)
 
 isSquare :: Matrix -> Bool
 isSquare m = let (rows, cols) = dim m in rows == cols
+
+instance Num Matrix where
+  negate = V.map negate 
+  abs = V.map abs
+  fromInteger = undefined
+  signum = V.map signum 
+  (+) = V.zipWith (+)
+  (*) = multMM
+
