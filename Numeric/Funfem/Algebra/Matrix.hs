@@ -62,3 +62,5 @@ instance Num Matrix where
   (+) = V.zipWith (+)
   (*) = multMM
 
+vecProd :: Vector -> Vector -> Matrix
+vecProd v w = if V.null v then V.empty else V.cons (V.map (*V.head v) w) (vecProd (V.tail v) w)  
