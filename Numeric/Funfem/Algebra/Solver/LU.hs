@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------- 
 -- |
--- Module : Solver
+-- Module : LU
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
@@ -11,10 +11,12 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Algebra.Solver (
-  module Numeric.Funfem.Algebra.Solver.CG
-  ,module Numeric.Funfem.Algebra.Solver.LU
-  ) where
+module Numeric.Funfem.Algebra.Solver.LU (luSolve) where
 
-import Numeric.Funfem.Algebra.Solver.CG
-import Numeric.Funfem.Algebra.Solver.LU
+
+import qualified Data.Vector as V
+
+import Numeric.Funfem.Algebra.Vector
+import Numeric.Funfem.Algebra.Matrix
+
+luSolve = undefined

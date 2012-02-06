@@ -13,7 +13,7 @@ with vectors and matrices in Funfem (at the moment).
 We obviously need the Solver module. It only contains the conjugate gradient
 at the moment, which isn't even preconditionned!
 
-> import Numeric.Funfem.Solver
+> import Numeric.Funfem.Algebra.Solver.CG
 
 Usual main function declaration.
 
