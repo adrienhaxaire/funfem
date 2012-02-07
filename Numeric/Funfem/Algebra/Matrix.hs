@@ -20,6 +20,12 @@ import qualified Data.Vector as V
 
 type Matrix = V.Vector Vector 
 
+matrix :: [[Double]] -> Matrix
+matrix l = V.fromList $ map vector l
+
+toLists :: Matrix -> [[Double]]
+toLists m = if V.null m then [] else toList (V.head m) : toLists (V.tail m)
+
 headColumn :: Matrix -> Vector
 headColumn = V.map V.head
 

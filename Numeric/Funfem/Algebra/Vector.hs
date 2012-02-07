@@ -19,6 +19,12 @@ import qualified Data.Vector as V
 
 type Vector = V.Vector Double
 
+vector :: [Double] -> Vector
+vector = V.fromList
+
+toList :: Vector -> [Double]
+toList v = if V.null v then [] else V.head v : toList (V.tail v)
+
 dotProd :: Vector -> Vector -> Double
 dotProd v w = V.sum $ V.zipWith (*) v w
 
