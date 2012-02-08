@@ -22,7 +22,6 @@ library
 
   exposed-modules: 
                    Numeric.Funfem,
-                   Numeric.Funfem.Elements,
                    Numeric.Funfem.Algebra
 
   ghc-options:     -Wall -O2
