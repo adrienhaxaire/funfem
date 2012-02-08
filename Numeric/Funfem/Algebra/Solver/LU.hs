@@ -35,7 +35,7 @@ findX us xs ys = if V.null us then xs else findX (V.init us) (V.cons x xs) ys
   where 
     u = V.last us 
     y = V.drop (V.length us - 1) ys
-    x = (V.head y - dotProd (V.tail u) xs) / (V.head u)
+    x = (V.head y - dotProd (V.tail u) xs) / V.head u
 
 -- values are ok, but ordering is not
 luFact :: Matrix -> (Matrix, Matrix)
@@ -44,37 +44,26 @@ luFact m | V.length m < 2 = (V.empty, V.empty)
   where
     (lower, upper) = luFact' (V.empty, V.empty) m
 
+luFact' :: (Matrix, Matrix) -> Matrix -> (Matrix, Matrix)
+luFact' (lower, upper) m | V.null m        = (V.empty, V.empty) 
+                         | V.length m == 1 = (lower V.++ matrix [[1.0]], upper V.++ matrix [[u11]])
+                         | otherwise       = luFact' (lower V.++ l, upper V.++ u) minorLU
+  where
+    minorLU = minor m - vecProd matL21 matU12    
+    u11 = V.head $ V.head m
+    matU12 = V.tail $ V.head m  
+    matL21 = V.map (/ u11) $ V.tail $ headColumn m
+    uh = V.cons u11 matU12
+    u = V.cons uh V.empty
+    l = V.fromList [vector [1.0] V.++ matL21]
+
 reorder :: Matrix -> Matrix -> Matrix
-reorder ls rs = if V.length ls == 1 then (V.cons r rs) else reorder ls' (V.cons r rs)
+reorder ls rs = if V.length ls == 1 then V.cons r rs else reorder ls' (V.cons r rs)
   where
     r = V.map V.last ls
     ls' = V.init $ V.map V.init ls
 
-luFact' :: (Matrix, Matrix) -> Matrix -> (Matrix, Matrix)
-luFact' (lower, upper) m | V.null m        = (V.empty, V.empty) 
-                         | V.length m == 1 = (lower V.++ matrix [[1.0]], upper V.++ matrix [[u11 m]])
-                         | otherwise       = luFact' (lower V.++ l m, upper V.++ u m ) (minorLU m)
 
-u11 :: Matrix -> Double
-u11 = V.head . V.head
-
-matU12 :: Matrix -> Vector
-matU12 = V.tail . V.head   
-
-matL21 :: Matrix -> Vector
-matL21 m = V.map (/ u11 m) $ V.tail $ headColumn m
-
-headU :: Matrix -> Vector
-headU m = V.cons (u11 m) (matU12 m)
-
-u :: Matrix -> Matrix
-u m = V.cons (headU m) V.empty
-
-l :: Matrix -> Matrix
-l m = V.fromList [vector [1.0] V.++ matL21 m]
-
-minorLU :: Matrix -> Matrix
-minorLU m = minor m - vecProd (matL21 m) (matU12 m)
 
 a :: Matrix
 a = matrix [[8.0, 2.0, 9.0], [4.0, 9.0, 4.0], [6.0, 7.0, 9.0]]
