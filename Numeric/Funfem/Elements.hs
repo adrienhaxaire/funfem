@@ -12,7 +12,5 @@
 
 module Numeric.Funfem.Elements where
 
-import Numeric.Funfem.Stiffnesses
-
 class Element a where
   integrate :: a -> Stiffness
