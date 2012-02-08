@@ -15,10 +15,12 @@
 
 module Numeric.Funfem.Algebra.Matrix where
 
+import Data.List (transpose)
+
 import Numeric.Funfem.Algebra.Vector
 import qualified Data.Vector as V
 
-type Matrix = V.Vector Vector 
+type Matrix = V.Vector (V.Vector Double)
 
 matrix :: [[Double]] -> Matrix
 matrix l = V.fromList $ map vector l
@@ -41,9 +43,8 @@ tailRows = V.tail
 nullMatrix :: Matrix -> Bool
 nullMatrix = V.null . V.head 
 
-transpose :: Matrix -> Matrix
-transpose m | nullMatrix m = V.empty
-            | otherwise    = V.fromList [headColumn m] V.++ transpose (tailColumns m)
+transposeMatrix :: Matrix -> Matrix
+transposeMatrix = matrix . transpose . toLists
 
 multMV :: Matrix -> Vector -> Vector
 multMV m v = V.map (dotProd v) m
@@ -52,7 +53,7 @@ multMM :: Matrix -> Matrix -> Matrix
 multMM m n = V.map row m 
   where
     row r = V.map (dotProd r) tn
-    tn = transpose n
+    tn = transposeMatrix n
 
 dim :: Matrix -> (Int, Int)
 dim m = (V.length m,V.length $ V.head m)
@@ -70,3 +71,9 @@ instance Num Matrix where
 
 vecProd :: Vector -> Vector -> Matrix
 vecProd v w = if V.null v then V.empty else V.cons (V.map (*V.head v) w) (vecProd (V.tail v) w)  
+
+minor :: Matrix -> Matrix
+minor = V.tail . tailColumns
+
+transposeVector :: Vector -> Matrix
+transposeVector v = matrix $ transpose [toList v]
