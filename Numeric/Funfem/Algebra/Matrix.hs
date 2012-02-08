@@ -43,6 +43,9 @@ tailRows = V.tail
 nullMatrix :: Matrix -> Bool
 nullMatrix = V.null . V.head 
 
+transposeVector :: Vector -> Matrix
+transposeVector v = matrix $ transpose [toList v]
+
 transposeMatrix :: Matrix -> Matrix
 transposeMatrix = matrix . transpose . toLists
 
@@ -74,6 +77,3 @@ vecProd v w = if V.null v then V.empty else V.cons (V.map (*V.head v) w) (vecPro
 
 minor :: Matrix -> Matrix
 minor = V.tail . tailColumns
-
-transposeVector :: Vector -> Matrix
-transposeVector v = matrix $ transpose [toList v]

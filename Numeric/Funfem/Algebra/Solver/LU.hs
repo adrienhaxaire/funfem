@@ -15,35 +15,40 @@ module Numeric.Funfem.Algebra.Solver.LU where
 
 
 import qualified Data.Vector as V
+import Data.List (replicate)
 
 import Numeric.Funfem.Algebra.Vector
 import Numeric.Funfem.Algebra.Matrix
 
+
 luSolve = undefined
 
+-- solve Ly = b
+--findY :: Matrix -> Vector -> Vector -> Vector
+--findY ls ys bs = if V.null us then xs else findX (V.init us) (V.cons x xs) ys
 
-a = matrix [[8.0, 2.0, 9.0], [4.0, 9.0, 4.0], [6.0, 7.0, 9.0]]
 
--- fst row of U, fst column of L
+
+-- solve Ux = y
+findX :: Matrix -> Vector -> Vector -> Vector
+findX us xs ys = if V.null us then xs else findX (V.init us) (V.cons x xs) ys
+  where 
+    u = V.last us 
+    y = V.drop (V.length us - 1) ys
+    x = (V.head y - dotProd (V.tail u) xs) / (V.head u)
+
+-- values are ok, but ordering is not
 luFact :: Matrix -> (Matrix, Matrix)
 luFact m | V.length m < 2 = (V.empty, V.empty)
-         | otherwise = (reorder lower, upper)
+         | otherwise = (reorder lower V.empty, upper)
   where
     (lower, upper) = luFact' (V.empty, V.empty) m
-             
-{-
--- fromList [fromList [1.0,0.5,0.75],fromList [1.0,0.6875],fromList [1.0]]
-reorder :: Matrix -> Matrix
-reorder m = go m V.empty (V.length m)
+
+reorder :: Matrix -> Matrix -> Matrix
+reorder ls rs = if V.length ls == 1 then (V.cons r rs) else reorder ls' (V.cons r rs)
   where
-    go x r n = if n == 0 then V.empty else go x r' n-1
-      where
-        r' = r 
--}               
-reorder = id             
-
-
-
+    r = V.map V.last ls
+    ls' = V.init $ V.map V.init ls
 
 luFact' :: (Matrix, Matrix) -> Matrix -> (Matrix, Matrix)
 luFact' (lower, upper) m | V.null m        = (V.empty, V.empty) 
@@ -57,7 +62,7 @@ matU12 :: Matrix -> Vector
 matU12 = V.tail . V.head   
 
 matL21 :: Matrix -> Vector
-matL21 m = V.map (/(u11 m)) $ V.tail $ headColumn m
+matL21 m = V.map (/ u11 m) $ V.tail $ headColumn m
 
 headU :: Matrix -> Vector
 headU m = V.cons (u11 m) (matU12 m)
@@ -71,4 +76,5 @@ l m = V.fromList [vector [1.0] V.++ matL21 m]
 minorLU :: Matrix -> Matrix
 minorLU m = minor m - vecProd (matL21 m) (matU12 m)
 
-
+a :: Matrix
+a = matrix [[8.0, 2.0, 9.0], [4.0, 9.0, 4.0], [6.0, 7.0, 9.0]]
