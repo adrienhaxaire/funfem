@@ -11,23 +11,27 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Algebra.Solver.LU where
+module Numeric.Funfem.Algebra.Solver.LU (lu) where
 
 
 import qualified Data.Vector as V
-import Data.List (replicate)
 
 import Numeric.Funfem.Algebra.Vector
 import Numeric.Funfem.Algebra.Matrix
 
-
-luSolve = undefined
+-- | Solves Ax=b using LU decomposition and backsubstitution
+lu :: Matrix -> Vector -> Vector
+lu a b = findX upper V.empty $ findY lower V.empty b 
+  where
+    (lower, upper) = luFact a
 
 -- solve Ly = b
---findY :: Matrix -> Vector -> Vector -> Vector
---findY ls ys bs = if V.null us then xs else findX (V.init us) (V.cons x xs) ys
-
-
+findY :: Matrix -> Vector -> Vector -> Vector
+findY ls ys bs = if V.null ls then ys else findY (V.tail ls) (ys V.++ vector [y]) bs
+  where
+    y = b - dotProd (V.init l) ys
+    b = bs V.! V.length ys
+    l = V.head ls
 
 -- solve Ux = y
 findX :: Matrix -> Vector -> Vector -> Vector
@@ -62,8 +66,3 @@ reorder ls rs = if V.length ls == 1 then V.cons r rs else reorder ls' (V.cons r 
   where
     r = V.map V.last ls
     ls' = V.init $ V.map V.init ls
-
-
-
-a :: Matrix
-a = matrix [[8.0, 2.0, 9.0], [4.0, 9.0, 4.0], [6.0, 7.0, 9.0]]
