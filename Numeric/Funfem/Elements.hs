@@ -10,7 +10,10 @@
 ----------------------------------------------------------------------------------
 --
 
+{-
 module Numeric.Funfem.Elements where
 
 class Element a where
   integrate :: a -> Stiffness
+  
+-}
