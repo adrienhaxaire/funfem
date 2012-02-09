@@ -56,8 +56,7 @@ luFact' (lower, upper) m | V.null m        = (V.empty, V.empty)
     u11 = V.head $ V.head m
     matU12 = V.tail $ V.head m  
     matL21 = V.map (/ u11) $ V.tail $ headColumn m
-    uh = V.cons u11 matU12
-    u = V.cons uh V.empty
+    u = V.cons (V.cons u11 matU12) V.empty
     l = V.fromList [vector [1.0] V.++ matL21]
 
 reorder :: Matrix -> Matrix -> Matrix

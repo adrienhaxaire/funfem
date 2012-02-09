@@ -28,6 +28,7 @@ toList v = if V.null v then [] else V.head v : toList (V.tail v)
 dotProd :: Vector -> Vector -> Double
 dotProd v w = V.sum $ V.zipWith (*) v w
 
+-- | Infix dot product
 (.*) :: Vector -> Vector -> Double
 v .* w = V.sum $ V.zipWith (*) v w
 
