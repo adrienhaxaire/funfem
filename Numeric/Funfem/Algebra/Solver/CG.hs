@@ -21,7 +21,8 @@ import qualified Data.Vector as V
 import Numeric.Funfem.Algebra.Vector
 import Numeric.Funfem.Algebra.Matrix
 
--- | Solves Ax = b.
+-- | Solves Ax = b using the conjugate gradient method. Not
+-- preconditionned and unstable; the LU solver should be prefered.
 cg :: Matrix -> Vector -> Vector
 cg a b = cg' a x0 b b b
   where

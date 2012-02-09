@@ -13,7 +13,6 @@
 
 module Numeric.Funfem.Algebra.Solver.LU (lu) where
 
-
 import qualified Data.Vector as V
 
 import Numeric.Funfem.Algebra.Vector

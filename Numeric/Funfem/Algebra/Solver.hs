@@ -12,8 +12,8 @@
 --
 
 module Numeric.Funfem.Algebra.Solver (
-  module Numeric.Funfem.Algebra.Solver.CG
-  ,module Numeric.Funfem.Algebra.Solver.LU
+  cg
+  ,lu
   ) where
 
 import Numeric.Funfem.Algebra.Solver.CG
