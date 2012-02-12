@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------- 
 -- |
--- Module : Algebra
+-- Module : Numeric.Funfem.Algebra
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --

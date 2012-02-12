@@ -40,7 +40,6 @@ findX us xs ys = if V.null us then xs else findX (V.init us) (V.cons x xs) ys
     y = V.drop (V.length us - 1) ys
     x = (V.head y - dotProd (V.tail u) xs) / V.head u
 
--- values are ok, but ordering is not
 luFact :: Matrix -> (Matrix, Matrix)
 luFact m | V.length m < 2 = (V.empty, V.empty)
          | otherwise = (reorder lower V.empty, upper)
