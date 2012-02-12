@@ -13,11 +13,7 @@
 
 module Numeric.Funfem.Elements where 
 
-import qualified Data.Vector as V
 import qualified Data.Map as M
-
-import Numeric.Funfem.Algebra.Vector
-import Numeric.Funfem.Algebra.Matrix
 
 type Point = [Double]
 
