@@ -24,5 +24,6 @@ library
                    Numeric.Funfem,
                    Numeric.Funfem.Algebra,
                    Numeric.Funfem.Elements
+                   Numeric.Funfem.Assembly
 
   ghc-options:     -Wall -O2

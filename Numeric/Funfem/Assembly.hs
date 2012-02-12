@@ -14,17 +14,17 @@
 module Numeric.Funfem.Assembly where
 
 -- | Derivative of function with respect to variable position
-df :: Int -> -- ^ variable number
-      ([Double] -> Double) -> -- | function to differentiate
-      [Double] -> Double 
+df :: Int  -- ^ @n@ variable number
+      -> ([Double] -> Double)  -- ^ @f@ function to differentiate
+      -> [Double] -> Double 
 df n f = let h = 0.001 in 
   \x -> (f (take (n-1) x ++ [x !! (n-1) + h] ++ drop n x) - f x) / h
 
 -- | Integration function using Simpson's rule
-intf :: ([Double] -> Double) -> -- | function to integrate
-        Double -> -- | lower bound of integral
-        Double -> -- | upper bound of integral
-        Double
+intf :: ([Double] -> Double) -- ^ @f@ function to integrate
+        -> Double -- ^@a@ lower bound of integral
+        -> Double -- ^@b@ upper bound of integral
+        -> Double
 intf f a b = (f [a] + 4 * f [(a+b)/2.0] + f [b]) * (b-a)/ 6.0
 
 
