@@ -17,29 +17,26 @@ module Numeric.Funfem.Algebra.Vector where
 
 import qualified Data.Vector as V
 
-type Vector = V.Vector Double
-
-vector :: [Double] -> Vector
+vector :: [a] -> V.Vector a
 vector = V.fromList
 
-toList :: Vector -> [Double]
+toList :: V.Vector  a-> [a]
 toList v = if V.null v then [] else V.head v : toList (V.tail v)
 
-dotProd :: Vector -> Vector -> Double
+dotProd :: Num a => V.Vector a -> V.Vector a -> a
 dotProd v w = V.sum $ V.zipWith (*) v w
 
 -- | Infix dot product
-(.*) :: Vector -> Vector -> Double
+(.*) :: Num a => V.Vector a -> V.Vector a -> a
 v .* w = V.sum $ V.zipWith (*) v w
 
-norm :: Vector -> Double
+norm :: Floating a => V.Vector a -> a
 norm v = sqrt $ v .* v
 
-instance Num Vector where
+instance Num a => Num (V.Vector a) where
   negate = V.map negate 
   abs = V.map abs
   fromInteger = undefined
   signum = V.map signum 
   (+) = V.zipWith (+)
   (*) = V.zipWith (*)
-

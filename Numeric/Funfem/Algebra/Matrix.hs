@@ -20,7 +20,10 @@ import Data.List (transpose)
 import Numeric.Funfem.Algebra.Vector
 import qualified Data.Vector as V
 
+type Vector = V.Vector Double
 type Matrix = V.Vector (V.Vector Double)
+
+
 
 matrix :: [[Double]] -> Matrix
 matrix l = V.fromList $ map vector l
