@@ -1,4 +1,4 @@
-{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
@@ -20,54 +20,51 @@ import Data.List (transpose)
 import Numeric.Funfem.Algebra.Vector
 import qualified Data.Vector as V
 
-type Vector = V.Vector Double
 type Matrix = V.Vector (V.Vector Double)
 
-
-
-matrix :: [[Double]] -> Matrix
+matrix :: [[a]] -> V.Vector (V.Vector a)
 matrix l = V.fromList $ map vector l
 
-toLists :: Matrix -> [[Double]]
+toLists :: V.Vector (V.Vector a) -> [[a]]
 toLists m = if V.null m then [] else toList (V.head m) : toLists (V.tail m)
 
-headColumn :: Matrix -> Vector
+headColumn :: V.Vector (V.Vector a) -> V.Vector a
 headColumn = V.map V.head
 
-tailColumns :: Matrix -> Matrix
+tailColumns :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
 tailColumns = V.map V.tail
 
-headRow :: Vector -> Double
+headRow :: V.Vector a -> a
 headRow = V.head
 
-tailRows :: Vector -> Vector
+tailRows :: V.Vector a -> V.Vector a
 tailRows = V.tail
 
-nullMatrix :: Matrix -> Bool
+nullMatrix :: V.Vector (V.Vector a) -> Bool
 nullMatrix = V.null . V.head 
 
-transposeVector :: Vector -> Matrix
+transposeVector :: V.Vector a -> V.Vector (V.Vector a)
 transposeVector v = matrix $ transpose [toList v]
 
-transposeMatrix :: Matrix -> Matrix
+transposeMatrix :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
 transposeMatrix = matrix . transpose . toLists
 
-multMV :: Matrix -> Vector -> Vector
+multMV :: Num a => V.Vector (V.Vector a) -> V.Vector a -> V.Vector a
 multMV m v = V.map (dotProd v) m
 
-multMM :: Matrix -> Matrix -> Matrix
+multMM :: Num a => V.Vector (V.Vector a) -> V.Vector (V.Vector a) -> V.Vector (V.Vector a)
 multMM m n = V.map row m 
   where
     row r = V.map (dotProd r) tn
     tn = transposeMatrix n
 
-dim :: Matrix -> (Int, Int)
-dim m = (V.length m,V.length $ V.head m)
+dim :: V.Vector (V.Vector a) -> (Int, Int)
+dim m = (V.length m, V.length $ V.head m)
 
-isSquare :: Matrix -> Bool
+isSquare :: V.Vector (V.Vector a) -> Bool
 isSquare m = let (rows, cols) = dim m in rows == cols
 
-instance Num Matrix where
+instance Num a => Num (V.Vector (V.Vector a)) where
   negate = V.map negate 
   abs = V.map abs
   fromInteger = undefined
@@ -75,8 +72,9 @@ instance Num Matrix where
   (+) = V.zipWith (+)
   (*) = multMM
 
-vecProd :: Vector -> Vector -> Matrix
+vecProd :: Num a => V.Vector a -> V.Vector a -> V.Vector (V.Vector a)
 vecProd v w = if V.null v then V.empty else V.cons (V.map (*V.head v) w) (vecProd (V.tail v) w)  
 
-minor :: Matrix -> Matrix
+minor :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
 minor = V.tail . tailColumns
+

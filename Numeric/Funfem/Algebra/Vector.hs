@@ -1,4 +1,3 @@
-{-# LANGUAGE TypeSynonymInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
@@ -17,10 +16,12 @@ module Numeric.Funfem.Algebra.Vector where
 
 import qualified Data.Vector as V
 
+type Vector = V.Vector Double
+
 vector :: [a] -> V.Vector a
 vector = V.fromList
 
-toList :: V.Vector  a-> [a]
+toList :: V.Vector a -> [a]
 toList v = if V.null v then [] else V.head v : toList (V.tail v)
 
 dotProd :: Num a => V.Vector a -> V.Vector a -> a

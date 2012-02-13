@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------- 
 -- |
--- Module : Elements
+-- Module : Numeric.Funfem.Elements
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
@@ -28,6 +28,13 @@ class Element a where
   material :: a -> Material
   shape :: a -> [[Double] -> Double] 
   
+-- | Determines the dimension (1D, 2D, etc) of the element based on
+-- the number of coordinates per Point
+dimension :: Element a => a -> Int  
+dimension = length . coordinates . head . nodes
+
+
+
 -- | Linear line element.
 data Lin2 = Lin2 {nodesLin2 :: [Node], matLin2 :: Material}
             deriving (Eq, Ord, Show)
@@ -39,21 +46,14 @@ lengthLin2 :: Lin2 -> Double
 lengthLin2 el = let [x1,x2] = coorsLin2 el in abs (x1 - x2) 
 
 shapeLin2 :: Lin2 -> [[Double] -> Double]
-shapeLin2 el = [f1, f2] 
-  where
-    l = lengthLin2 el 
-    f1 [x] = 1-x/l
-    f2 [x] = x/l
+shapeLin2 el = let l = lengthLin2 el in [\x -> 1.0 - head x /l, \x -> head x/l]
 
 instance Element Lin2 where
   nodes = nodesLin2
   material = matLin2
   shape = shapeLin2
 
-
-
-
-  
+{-
 
 n1 = Node [0.0] 1  
 n2 = Node [1.0] 2
@@ -61,3 +61,4 @@ mat = M.fromList [("conductivity", 1.0)]
 
 el1 = Lin2 [n1,n2] mat
 
+-}

@@ -18,6 +18,7 @@ import qualified Data.Vector as V
 import Numeric.Funfem.Algebra.Vector
 import Numeric.Funfem.Algebra.Matrix
 
+
 -- | Solves Ax=b using LU decomposition and backsubstitution
 lu :: Matrix -> Vector -> Vector
 lu a b = findX upper V.empty $ findY lower V.empty b 
@@ -51,9 +52,9 @@ luFact' (lower, upper) m | V.null m        = (V.empty, V.empty)
                          | V.length m == 1 = (lower V.++ matrix [[1.0]], upper V.++ matrix [[u11]])
                          | otherwise       = luFact' (lower V.++ l, upper V.++ u) minorLU
   where
-    minorLU = minor m - vecProd matL21 matU12    
+    minorLU = V.zipWith (-) (minor m) (vecProd matL21 matU12)
     u11 = V.head $ V.head m
-    matU12 = V.tail $ V.head m  
+    matU12 = V.tail $ V.head m
     matL21 = V.map (/ u11) $ V.tail $ headColumn m
     u = V.cons (V.cons u11 matU12) V.empty
     l = V.fromList [vector [1.0] V.++ matL21]
@@ -63,3 +64,4 @@ reorder ls rs = if V.length ls == 1 then V.cons r rs else reorder ls' (V.cons r 
   where
     r = V.map V.last ls
     ls' = V.init $ V.map V.init ls
+
