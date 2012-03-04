@@ -32,6 +32,6 @@ And finally do the effective calculation and display the result.
 
 >   let r = cg m v
         
-The result should be 74 and 35.5                     
+The result should be 74 and -35.5                     
         
 >   print r  

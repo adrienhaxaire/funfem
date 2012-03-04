@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
@@ -18,23 +19,23 @@ import qualified Data.Vector as V
 
 type Vector = V.Vector Double
 
-vector :: [a] -> V.Vector a
+vector :: [Double] -> Vector
 vector = V.fromList
 
-toList :: V.Vector a -> [a]
+toList :: Vector -> [Double]
 toList v = if V.null v then [] else V.head v : toList (V.tail v)
 
-dotProd :: Num a => V.Vector a -> V.Vector a -> a
+dotProd :: Vector -> Vector -> Double
 dotProd v w = V.sum $ V.zipWith (*) v w
 
 -- | Infix dot product
-(.*) :: Num a => V.Vector a -> V.Vector a -> a
+(.*) :: Vector -> Vector -> Double
 v .* w = V.sum $ V.zipWith (*) v w
 
-norm :: Floating a => V.Vector a -> a
+norm :: Vector -> Double
 norm v = sqrt $ v .* v
 
-instance Num a => Num (V.Vector a) where
+instance Num (Vector) where
   negate = V.map negate 
   abs = V.map abs
   fromInteger = undefined

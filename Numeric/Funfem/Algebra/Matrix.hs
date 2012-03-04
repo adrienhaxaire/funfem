@@ -22,49 +22,49 @@ import qualified Data.Vector as V
 
 type Matrix = V.Vector (V.Vector Double)
 
-matrix :: [[a]] -> V.Vector (V.Vector a)
+matrix :: [[Double]] -> Matrix
 matrix l = V.fromList $ map vector l
 
-toLists :: V.Vector (V.Vector a) -> [[a]]
+toLists :: Matrix -> [[Double]]
 toLists m = if V.null m then [] else toList (V.head m) : toLists (V.tail m)
 
-headColumn :: V.Vector (V.Vector a) -> V.Vector a
+headColumn :: Matrix -> Vector
 headColumn = V.map V.head
 
-tailColumns :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
+tailColumns :: Matrix -> Matrix
 tailColumns = V.map V.tail
 
-headRow :: V.Vector a -> a
+headRow :: Vector -> Double
 headRow = V.head
 
-tailRows :: V.Vector a -> V.Vector a
+tailRows :: Vector -> Vector
 tailRows = V.tail
 
-nullMatrix :: V.Vector (V.Vector a) -> Bool
+nullMatrix :: Matrix -> Bool
 nullMatrix = V.null . V.head 
 
-transposeVector :: V.Vector a -> V.Vector (V.Vector a)
+transposeVector :: Vector -> Matrix
 transposeVector v = matrix $ transpose [toList v]
 
-transposeMatrix :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
+transposeMatrix :: Matrix -> Matrix
 transposeMatrix = matrix . transpose . toLists
 
-multMV :: Num a => V.Vector (V.Vector a) -> V.Vector a -> V.Vector a
+multMV ::  Matrix -> Vector -> Vector
 multMV m v = V.map (dotProd v) m
 
-multMM :: Num a => V.Vector (V.Vector a) -> V.Vector (V.Vector a) -> V.Vector (V.Vector a)
+multMM :: Matrix -> Matrix -> Matrix
 multMM m n = V.map row m 
   where
     row r = V.map (dotProd r) tn
     tn = transposeMatrix n
 
-dim :: V.Vector (V.Vector a) -> (Int, Int)
+dim :: Matrix -> (Int, Int)
 dim m = (V.length m, V.length $ V.head m)
 
-isSquare :: V.Vector (V.Vector a) -> Bool
+isSquare :: Matrix -> Bool
 isSquare m = let (rows, cols) = dim m in rows == cols
 
-instance Num a => Num (V.Vector (V.Vector a)) where
+instance Num Matrix where
   negate = V.map negate 
   abs = V.map abs
   fromInteger = undefined
@@ -72,9 +72,9 @@ instance Num a => Num (V.Vector (V.Vector a)) where
   (+) = V.zipWith (+)
   (*) = multMM
 
-vecProd :: Num a => V.Vector a -> V.Vector a -> V.Vector (V.Vector a)
+vecProd :: Vector -> Vector -> Matrix
 vecProd v w = if V.null v then V.empty else V.cons (V.map (*V.head v) w) (vecProd (V.tail v) w)  
 
-minor :: V.Vector (V.Vector a) -> V.Vector (V.Vector a)
+minor :: Matrix -> Matrix
 minor = V.tail . tailColumns
 
