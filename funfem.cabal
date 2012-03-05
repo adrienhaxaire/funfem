@@ -39,3 +39,7 @@ library
 source-repository head
   type:     darcs
   location: http://code.funfem.org/funfem
+
+source-repository head
+  type:     git
+  location: git://github.com/adrienhaxaire/funfem.git
