@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 ---------------------------------------------------------------------------------- 
 -- |
 -- Module : Numeric.Funfem.Algebra.Polynomials
@@ -7,9 +9,12 @@
 -- Maintainer : Adrien Haxaire <adrien@funfem.org>
 -- Stability : experimental
 -- Portabilty : not tested
---
-----------------------------------------------------------------------------------
---
+-- 
+-- Multivariate 'Polynomial's. Defined to represent shape functions, allowing
+-- their exact multiplication, addition and integration. 
+-- 
+-- A barebone Num instance is provided, but the functions 'add', 'substract'
+-- and 'mult' are provided for comodity.
 
 module Numeric.Funfem.Algebra.Polynomials (
                                            Polynomial
@@ -17,6 +22,9 @@ module Numeric.Funfem.Algebra.Polynomials (
                                            ,differentiate
                                            ,integrate
                                            ,eval
+                                           ,add
+                                           ,substract
+                                           ,mult
                                           ) where
 
 import qualified Data.Map as M
@@ -32,7 +40,7 @@ type Eval = M.Map Char Double
 
 -- count the occurences of a monomial in a term
 occ :: Char -> String -> Double 
-occ c [] = 0.0
+occ _ [] = 0.0
 occ c (x:xs) = let n = if c == x then 1.0 else 0.0 in n + occ c xs
 
 
@@ -67,7 +75,7 @@ eval p e = M.foldl (+) 0.0 $ evals p e
 evals :: Polynomial -> Eval -> Polynomial
 evals p e = evals' p e $ M.keys e
     where
-      evals' q ev [] = q
+      evals' q _ [] = q
       evals' q ev (c:cs) = evals' (evalOne q ev c) ev cs                 
 
 evalOne :: Polynomial -> Eval -> Char -> Polynomial
@@ -75,3 +83,27 @@ evalOne p e c = M.mapWithKey f p
     where
       f k v = v * (x ** (occ c k))
       x = fromJust $ M.lookup c e
+
+instance Num Polynomial where
+    p + q = add p q
+    p * q = mult p q
+    negate = M.map negate
+    signum = M.map signum 
+    fromInteger = undefined         
+    abs = M.map abs
+
+-- | Addition of two 'Polynomial's.
+add :: Polynomial -> Polynomial -> Polynomial
+add p q = M.unionWith (+) p q
+
+-- | Substraction of two 'Polynomial's.
+substract :: Polynomial -> Polynomial -> Polynomial
+substract p q = M.unionWith (-) p q
+
+-- | Multiplication of two 'Polynomial's.
+mult :: Polynomial -> Polynomial -> Polynomial
+mult p q = mult' p q $ M.keys p
+    where
+      mult' _ _ [] = M.fromList []
+      mult' p' q' (key:keys) = add (M.map (* (p' M.! key)) $ M.mapKeys (key ++) q') (mult' p' q' keys)
+
