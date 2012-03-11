@@ -22,7 +22,6 @@ import qualified Data.Map as M
 import Numeric.Funfem.Algebra.Polynomials 
 import Numeric.Funfem.Elements
 
-
 -- | Matrix resulting from the product between the transposed of the
 -- gradient, a constant, and the gradient.  This function is quite handy when
 -- dealing with fluxes, as in Fourier's law for example.
@@ -49,19 +48,3 @@ tmcm m x = multMat (transpose m) $ shapeConst m x
 shapeConst :: [[Shape]] -> Double -> [[Shape]]
 shapeConst ss x = [[M.map (*x) p | p <- s] | s <- ss] 
 
-
-{-
-e1 = mkEvaluation [('x',1.0)]
-
--- here for temporary debugging
-n1 = Node [0.0] 1  
-n2 = Node [1.0] 2
-n3 = Node [2.0] 3
-mat = mkMaterial [("conductivity", 1.0)]
-
-el1 = Lin2 [n1,n2] mat
-el2 = Lin2 [n2,n3] mat
--}
-
-
--- tgrad * conductivity * grad

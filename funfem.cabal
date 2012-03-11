@@ -18,7 +18,7 @@ Build-Type:         Simple
 cabal-version:      >= 1.6.0
 library
   build-depends:   
-                   base >= 4.5.0.0 && < 5,
+                   base >= 4.5 && < 5,
                    vector >= 0.9.1,
                    containers >= 0.4.2.1
 
@@ -32,6 +32,7 @@ library
                    Numeric.Funfem.Algebra.Solver.LU,
                    Numeric.Funfem.Algebra.Solver.CG,
                    Numeric.Funfem.Elements,
+                   Numeric.Funfem.Mesh,
                    Numeric.Funfem.Assembly,
                    Numeric.Funfem.Phenomena
 

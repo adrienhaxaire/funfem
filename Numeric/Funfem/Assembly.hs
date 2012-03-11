@@ -12,10 +12,10 @@
 
 module Numeric.Funfem.Assembly where
 
-import Data.List (transpose, nub)
-import qualified Data.Map as M
 
 import Numeric.Funfem.Algebra.Matrix
 import Numeric.Funfem.Algebra.Polynomials
 import Numeric.Funfem.Elements
+import Numeric.Funfem.Phenomena
 
+-- need type Equation to carry all the terms (phenomena)

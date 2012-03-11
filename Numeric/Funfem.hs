@@ -14,12 +14,14 @@
 module Numeric.Funfem (
   module Numeric.Funfem.Algebra
   ,module Numeric.Funfem.Elements
+  ,module Numeric.Funfem.Mesh
   ,module Numeric.Funfem.Assembly
   ,module Numeric.Funfem.Phenomena
   ) where
 
 import Numeric.Funfem.Algebra
 import Numeric.Funfem.Elements
+import Numeric.Funfem.Mesh
 import Numeric.Funfem.Assembly
 import Numeric.Funfem.Phenomena
 
