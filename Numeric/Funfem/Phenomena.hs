@@ -42,7 +42,7 @@ source el x = transpose $ shapeConst (shape el) x
 
 -- TMCM : Transposed of Matrix, times a Constant, times same Matrix
 tmcm :: [[Shape]] -> Double -> [[Shape]]
-tmcm m x = multMat (transpose m) $ shapeConst m x
+tmcm m x = multLists (transpose m) $ shapeConst m x
 
 -- multiply a Shape matrix by a constant
 shapeConst :: [[Shape]] -> Double -> [[Shape]]

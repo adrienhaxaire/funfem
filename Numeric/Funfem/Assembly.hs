@@ -12,10 +12,12 @@
 
 module Numeric.Funfem.Assembly where
 
+import Data.Maybe (fromJust)
 
 import Numeric.Funfem.Algebra.Matrix
-import Numeric.Funfem.Algebra.Polynomials
 import Numeric.Funfem.Elements
+import Numeric.Funfem.Mesh
 import Numeric.Funfem.Phenomena
 
 -- need type Equation to carry all the terms (phenomena)
+

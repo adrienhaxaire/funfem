@@ -17,3 +17,7 @@ doc/
 report.html
 dist/
 _darcs/
+
+
+# temporary
+Numeric/Funfem/tmp.hs

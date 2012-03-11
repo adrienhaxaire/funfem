@@ -43,6 +43,10 @@ class Element a where
 dimension :: Element a => a -> Int  
 dimension = length . coordinates . head . nodes
 
+-- | Retrieves the value of an element material property. 
+property :: Element a => String -> a -> Maybe Double
+property s el = M.lookup s $ material el
+
 -- | Single row matrix containing the shape functions.
 shape :: Element a => a -> [[Shape]]
 shape el = [shapes el]
@@ -52,6 +56,33 @@ grad :: Element a => a -> [[Shape]]
 grad el = [map (\p -> differentiate p var) (shapes el) | var <- vars el]
     where
       vars = nub . concat . map variables . shapes
+
+-- | Evaluates a 'Polynomial' at given 'Node'.
+evaluateAtNode :: Polynomial -> Node -> Double
+evaluateAtNode p n = evaluate p eval
+    where
+      eval = mkEvaluation $ zip (variables p) (coordinates n)
+
+-- | Evaluates 'Polynomial' nested lists at given 'Node'.
+evaluateListsAtNode :: [[Polynomial]] -> Node -> [[Double]]
+evaluateListsAtNode m n = evaluateLists m eval 
+    where
+      eval = mkEvaluation $ zip vars (coordinates n)
+      vars = variables $ head $ head m
+
+-- | Evaluates a 'Polynomial' at given 'Point'.
+evaluateAtPoint :: Polynomial -> Point -> Double
+evaluateAtPoint p point = evaluate p eval
+    where
+      eval = mkEvaluation $ zip (variables p) point
+
+-- | Evaluates 'Polynomial' nested lists at given 'Point'.
+evaluateListsAtPoint :: [[Polynomial]] -> Point -> [[Double]]
+evaluateListsAtPoint m point = evaluateLists m eval 
+    where
+      eval = mkEvaluation $ zip vars point
+      vars = variables $ head $ head m
+
 
 -- ------------------------ Elements declarations ----------------------------
 -- | Linear line element.

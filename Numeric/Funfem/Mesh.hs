@@ -20,17 +20,14 @@ import Numeric.Funfem.Elements
 -- | Mesh data type
 data Mesh a = Mesh [a] 
 
-fromList :: Element a => [a] -> Mesh a
-fromList es = Mesh es
-
-toList :: Element a => Mesh a -> [a]
-toList (Mesh es) = es
+fromElements :: Element a => [a] -> Mesh a
+fromElements es = Mesh es
 
 meshElements :: Element a => Mesh a -> [a]
-meshElements = toList
+meshElements (Mesh es) = es
 
 meshNodes :: Element a => Mesh a -> [Node]
-meshNodes = concat . map nodes . toList 
+meshNodes = concat . map nodes . meshElements
 
 meshNodesUnique :: Element a => Mesh a -> [Node]
 meshNodesUnique = nub . meshNodes
