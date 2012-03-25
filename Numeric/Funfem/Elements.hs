@@ -20,7 +20,6 @@ import Numeric.Funfem.Algebra.Polynomials
 import Data.List (nub)
 
 type Point = [Double]
-
 type Shape = Polynomial
 
 data Node = Node {coordinates :: Point, nodeNumber :: Int} 
@@ -56,6 +55,13 @@ grad :: Element a => a -> [[Shape]]
 grad el = [map (\p -> differentiate p var) (shapes el) | var <- vars el]
     where
       vars = nub . concat . map variables . shapes
+
+-- | The 'evaluations' function generates the list of 'Evaluation' for an 
+-- 'Element'.
+evaluations el = [mkEvaluation $ zip vars (coordinates node) | node <- nodes el]
+    where
+      vars = variables $ head $ shapes el
+
 
 -- | Evaluates a 'Polynomial' at given 'Node'.
 evaluateAtNode :: Polynomial -> Node -> Double
@@ -99,11 +105,39 @@ shapesLin2 :: Lin2 -> [Shape]
 shapesLin2 el = [shape1, shape2]
     where
       l = lengthLin2 el 
-      shape1 = mkPolynomial [("",1.0),("x",-1.0/l)] -- 1-x/l
-      shape2 = mkPolynomial [("x",1.0/l)]           -- x/l
+      shape1 = mkPolynomial [("",1.0),("x",-1.0/l)]
+      shape2 = mkPolynomial [("x",1.0/l)] 
 
 instance Element Lin2 where
   nodes = nodesLin2
   material = matLin2
   shapes = shapesLin2
+
+
+-- | Linear triangular element.
+data Tri3 = Tri3 {nodesTri3 :: [Node], matTri3 :: Material}
+          deriving (Eq, Ord, Show)
+
+coorsTri3 :: Tri3 -> [[Double]]
+coorsTri3 = map coordinates . nodesTri3
+
+areaTri3 :: Tri3 -> Double
+areaTri3 el =  0.5 * ((x2-x1) * (y3-y1) - (x3-x1) * (y2-y1))
+    where  
+      [[x1,y1],[x2,y2],[x3,y3]] = coorsTri3 el
+
+shapesTri3 :: Tri3 -> [Shape]
+shapesTri3 el = map mkShape [n1,n2,n3]
+    where
+      [[x1,y1],[x2,y2],[x3,y3]] = coorsTri3 el
+      n1 = [("",x2*y3 - x3*y2), ("x",y2-y3), ("y",x3-x2)]
+      n2 = [("",x3*y1 - x1*y3), ("x",y3-y1), ("y",x1-x3)]
+      n3 = [("",x1*y2 - x2*y1), ("x",y1-y2), ("y",x2-x1)]
+      mkShape = M.map (*twoAreas) . mkPolynomial
+      twoAreas = (x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)
+
+instance Element Tri3 where
+  nodes = nodesTri3
+  material = matTri3
+  shapes = shapesTri3
 

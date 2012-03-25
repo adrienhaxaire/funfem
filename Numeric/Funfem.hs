@@ -8,7 +8,7 @@
 -- Stability : experimental
 -- Portabilty : not tested
 --
-----------------------------------------------------------------------------------
+-- List of exported modules.
 --
 
 module Numeric.Funfem (

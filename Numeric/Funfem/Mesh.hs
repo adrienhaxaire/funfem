@@ -10,7 +10,12 @@
 --
 ----------------------------------------------------------------------------------
 --
-module Numeric.Funfem.Mesh where 
+module Numeric.Funfem.Mesh (
+                            fromElements
+                            ,meshElements
+                            ,meshNodes
+                            ,meshNodesUnique
+                           )where 
 
 import Data.List (nub)
 
