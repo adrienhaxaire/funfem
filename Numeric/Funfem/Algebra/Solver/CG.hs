@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------- 
 -- |
--- Module : CG
+-- Module : Numeric.Funfem.Algebra.Solver.CG
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
@@ -11,30 +11,33 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Algebra.Solver.CG (
-  cg
-  ) where
+module Numeric.Funfem.Algebra.Solver.CG (cg) where
 
+import Numeric.Funfem.Algebra.Tensor
 
-import qualified Data.Vector as V
-
-import Numeric.Funfem.Algebra.Vector
-import Numeric.Funfem.Algebra.Matrix
-
--- | Solves Ax = b using the conjugate gradient method. Not
--- preconditionned and unstable; the LU solver should be prefered.
-cg :: Matrix -> Vector -> Vector
-cg a b = cg' a x0 b b b
+-- | Solves Ax = b using the preconditioned conjugate gradient method. 
+-- Unstable as check for SPD not yet implemented.
+cg :: Tensor Double -- ^ A, the left-hand side matrix of the system
+   -> Tensor Double -- ^ b, the right-hand side vector
+   -> Tensor Double -- ^ x, the resulting vector
+cg a b = cg' a x0 r0 d0 m
   where
-    x0 = V.replicate (V.length a) 0.0
-    
-cg' :: Matrix -> Vector -> Vector -> Vector -> Vector -> Vector
-cg' a x r z p = if norm r' <= eps then x' else cg' a x' r' z' p'
+    x0 = vector $ replicate (rows b) 0.0
+    r0 = b - a * x0
+    m = preconditioner a
+    d0 = m * r0
+
+cg' :: Tensor Double -> Tensor Double -> Tensor Double 
+    -> Tensor Double -> Tensor Double -> Tensor Double
+cg' a x r d m = if norm r' <= 1.0e-3 then x' else cg' a x' r' d' m
   where
-    alpha = (r .* z) / (p .* multMV a p)
-    beta = (z' .* r') / (z .* r)
-    x' = x + V.map (*alpha) p
-    r' = r - V.map (*alpha) (multMV a p)
-    z' = r' -- placeholder for preconditioner  
-    p' = z'+ V.map (*beta) p
-    eps = 1.0e-3
+    alpha = (r *. (m * r)) / (d *. (a * d))
+    x' = x + alpha *! d
+    r' = r - alpha *! (a * d)
+    beta' = (r' *. (m * r')) / (r *. (m * r))
+    d' = m * r' + beta' *! d
+
+-- Jacobi preconditioner
+preconditioner :: Tensor Double -> Tensor Double
+preconditioner = fmap (\x -> 1.0 / x) . diag 
+

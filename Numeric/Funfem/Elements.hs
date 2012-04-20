@@ -16,13 +16,13 @@ module Numeric.Funfem.Elements where
 
 import qualified Data.Map as M
 
-import Numeric.Funfem.Algebra.Polynomials
+import qualified Numeric.Funfem.Algebra.Polynomials as P
 import Data.List (nub)
 
 type Point = [Double]
-type Shape = Polynomial
+type Shape = P.Polynomial
 
-data Node = Node {coordinates :: Point, nodeNumber :: Int} 
+data Node = Node {nodeNumber :: Int, coordinates :: Point} 
             deriving (Eq, Ord, Show)
 
 type Material = M.Map String Double
@@ -36,7 +36,8 @@ class Element a where
   nodes :: a -> [Node]
   material :: a -> Material
   shapes :: a -> [Shape] 
-  
+  integration :: a -> P.Polynomial -> Double
+
 -- | Determines the dimension (1D, 2D, etc) of the element based on
 -- the number of coordinates per Point.
 dimension :: Element a => a -> Int  
@@ -46,49 +47,21 @@ dimension = length . coordinates . head . nodes
 property :: Element a => String -> a -> Maybe Double
 property s el = M.lookup s $ material el
 
--- | Single row matrix containing the shape functions.
-shape :: Element a => a -> [[Shape]]
-shape el = [shapes el]
-
 -- | The 'grad' function calculates the gradient of the shape functions.
 grad :: Element a => a -> [[Shape]]
-grad el = [map (\p -> differentiate p var) (shapes el) | var <- vars el]
+grad el = [map (\p -> P.differentiate p var) (shapes el) | var <- vars el]
     where
-      vars = nub . concat . map variables . shapes
+      vars = nub . concat . map P.variables . shapes
 
 -- | The 'evaluations' function generates the list of 'Evaluation' for an 
 -- 'Element'.
-evaluations el = [mkEvaluation $ zip vars (coordinates node) | node <- nodes el]
+evaluations el = [P.mkEval $ zip vars (coordinates node) | node <- nodes el]
     where
-      vars = variables $ head $ shapes el
+      vars = P.variables $ head $ shapes el
 
-
--- | Evaluates a 'Polynomial' at given 'Node'.
-evaluateAtNode :: Polynomial -> Node -> Double
-evaluateAtNode p n = evaluate p eval
-    where
-      eval = mkEvaluation $ zip (variables p) (coordinates n)
-
--- | Evaluates 'Polynomial' nested lists at given 'Node'.
-evaluateListsAtNode :: [[Polynomial]] -> Node -> [[Double]]
-evaluateListsAtNode m n = evaluateLists m eval 
-    where
-      eval = mkEvaluation $ zip vars (coordinates n)
-      vars = variables $ head $ head m
-
--- | Evaluates a 'Polynomial' at given 'Point'.
-evaluateAtPoint :: Polynomial -> Point -> Double
-evaluateAtPoint p point = evaluate p eval
-    where
-      eval = mkEvaluation $ zip (variables p) point
-
--- | Evaluates 'Polynomial' nested lists at given 'Point'.
-evaluateListsAtPoint :: [[Polynomial]] -> Point -> [[Double]]
-evaluateListsAtPoint m point = evaluateLists m eval 
-    where
-      eval = mkEvaluation $ zip vars point
-      vars = variables $ head $ head m
-
+-- | The 'constShape' function turns a Double into a constant 'Shape' function.
+constShape :: Double -> Shape
+constShape x = P.mkPoly [("",x)]
 
 -- ------------------------ Elements declarations ----------------------------
 -- | Linear line element.
@@ -105,14 +78,20 @@ shapesLin2 :: Lin2 -> [Shape]
 shapesLin2 el = [shape1, shape2]
     where
       l = lengthLin2 el 
-      shape1 = mkPolynomial [("",1.0),("x",-1.0/l)]
-      shape2 = mkPolynomial [("x",1.0/l)] 
+      shape1 = P.mkPoly [("",1.0),("x",-1.0/l)]
+      shape2 = P.mkPoly [("x",1.0/l)] 
+
+integrateLin2 :: Lin2 -> P.Polynomial -> Double
+integrateLin2 el p = P.evaluate (P.integrateBetween p 'x' 0.0 len) eval 
+    where 
+      len = lengthLin2 el
+      eval = P.mkEval []
 
 instance Element Lin2 where
   nodes = nodesLin2
   material = matLin2
   shapes = shapesLin2
-
+  integration = integrateLin2
 
 -- | Linear triangular element.
 data Tri3 = Tri3 {nodesTri3 :: [Node], matTri3 :: Material}
@@ -133,11 +112,11 @@ shapesTri3 el = map mkShape [n1,n2,n3]
       n1 = [("",x2*y3 - x3*y2), ("x",y2-y3), ("y",x3-x2)]
       n2 = [("",x3*y1 - x1*y3), ("x",y3-y1), ("y",x1-x3)]
       n3 = [("",x1*y2 - x2*y1), ("x",y1-y2), ("y",x2-x1)]
-      mkShape = M.map (*twoAreas) . mkPolynomial
+      mkShape = M.map (/twoAreas) . P.mkPoly
       twoAreas = (x2-x1) * (y3-y1) - (x3-x1) * (y2-y1)
 
 instance Element Tri3 where
   nodes = nodesTri3
   material = matTri3
   shapes = shapesTri3
-
+  integration = undefined

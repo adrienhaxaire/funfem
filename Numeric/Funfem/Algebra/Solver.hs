@@ -11,10 +11,7 @@
 ----------------------------------------------------------------------------------
 --
 
-module Numeric.Funfem.Algebra.Solver (
-  cg
-  ,lu
-  ) where
+module Numeric.Funfem.Algebra.Solver (cg) where
 
 import Numeric.Funfem.Algebra.Solver.CG
 import Numeric.Funfem.Algebra.Solver.LU

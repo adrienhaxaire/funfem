@@ -12,13 +12,11 @@
 --
 
 module Numeric.Funfem.Algebra (
-       module Numeric.Funfem.Algebra.Vector
-       ,module Numeric.Funfem.Algebra.Matrix
+       module Numeric.Funfem.Algebra.Tensor
        ,module Numeric.Funfem.Algebra.Solver
        ,module Numeric.Funfem.Algebra.Polynomials
        ) where
 
-import Numeric.Funfem.Algebra.Vector
-import Numeric.Funfem.Algebra.Matrix
+import Numeric.Funfem.Algebra.Tensor
 import Numeric.Funfem.Algebra.Solver
 import Numeric.Funfem.Algebra.Polynomials

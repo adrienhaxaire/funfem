@@ -21,12 +21,10 @@ library
                    base >= 4.5 && < 5, 
                    vector >= 0.9.1,
                    containers >= 0.4.2.1
-
   exposed-modules: 
                    Numeric.Funfem,
                    Numeric.Funfem.Algebra,
-                   Numeric.Funfem.Algebra.Vector,
-                   Numeric.Funfem.Algebra.Matrix,
+                   Numeric.Funfem.Algebra.Tensor,
                    Numeric.Funfem.Algebra.Polynomials,
                    Numeric.Funfem.Algebra.Solver,
                    Numeric.Funfem.Algebra.Solver.LU,

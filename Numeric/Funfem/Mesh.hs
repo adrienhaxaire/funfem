@@ -11,10 +11,11 @@
 ----------------------------------------------------------------------------------
 --
 module Numeric.Funfem.Mesh (
-                            fromElements
-                            ,meshElements
-                            ,meshNodes
-                            ,meshNodesUnique
+                            Mesh
+                            , fromElements
+                            , meshElements
+                            , meshNodes
+                            , meshNodesUnique
                            )where 
 
 import Data.List (nub)
