@@ -4,7 +4,7 @@
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
--- Maintainer : Adrien Haxaire <adrien@funfem.org>
+-- Maintainer : Adrien Haxaire <adrien@haxaire.org>
 -- Stability : experimental
 -- Portabilty : not tested
 --
@@ -18,6 +18,7 @@ module Numeric.Funfem.Algebra.Tensor (
                                       , Index
                                       , Dimension
                                       -- * Constructors
+                                      , empty
                                       , fromList
                                       , vector
                                       , matrix
@@ -26,17 +27,26 @@ module Numeric.Funfem.Algebra.Tensor (
                                       , cols
                                       , dim
                                       , isSquare
+                                      , symmetric
+                                      , spd
                                       -- * Slices
                                       , row
                                       , col
+                                      , rowWithout
+                                      , colWithout
                                       , diag
+                                      , at
                                       -- * Operations
+                                      , reindex
+                                      , replace
                                       , (+!)
                                       , (-!)
                                       , (*!)
                                       , (/!)
                                       , (*.)
                                       , transpose
+                                      , nullifyRow
+                                      , nullifyColumn
                                       , minor
                                       , norm
                                       , merge
@@ -44,7 +54,7 @@ module Numeric.Funfem.Algebra.Tensor (
                                      ) where
 
 import qualified Data.Map as M
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 import Data.Tuple (swap)
 import Control.Arrow (first, second)
 
@@ -67,6 +77,10 @@ instance Show a => Show (Tensor a) where
 instance Functor Tensor where
     fmap _ Empty = Empty
     fmap f (Matrix m rc) = Matrix (M.map f m) rc
+
+-- local helper to build a Tensor containing an empty Map
+empty :: Tensor a
+empty = Matrix M.empty (0,0)
 
 -- | Builds a 'Tensor' from an association list.
 fromList :: Ord a => [(Index, a)] -> Tensor a
@@ -108,7 +122,8 @@ dim :: Tensor a -> Dimension
 dim (Matrix _ rc) = rc
 dim Empty = (0,0)
 
--- | Checks if the 'Tensor' is square.
+-- | Checks if the 'Tensor' is square, i.e. it has the same number 
+-- of rows and columns.
 isSquare :: Tensor a -> Bool
 isSquare Empty = False
 isSquare m = uncurry (==) $ dim m
@@ -139,6 +154,31 @@ col n (Matrix m (r,c)) = if n > c then Empty else Matrix m' (r,1)
       mf = M.filterWithKey (\k _ -> snd k == n) m
 col _ Empty = Empty
 
+-- | Same as 'row' but removes the element located at the position given
+-- by the second argument.
+rowWithout :: Int -> Int -> Tensor a -> Tensor a
+rowWithout i j (Matrix m (r,c)) 
+    | i > r || i <= 0 = Empty
+    | j > c || j <= 0 = Empty 
+    | otherwise       = Matrix m' (1,c-1)
+    where
+      m' = M.fromList $ map (first $ first (const 1)) $ M.toList mf
+      mf = M.delete (i,j) $ M.filterWithKey (\k _ -> fst k == i) m
+
+-- | Same as 'col' but removes the element located at the position given
+-- by the second argument.
+colWithout :: Int -> Int -> Tensor a -> Tensor a
+colWithout i j (Matrix m (r,c)) 
+    | i > r || i <= 0 = Empty
+    | j > c || j <= 0 = Empty 
+    | otherwise       = Matrix m' (r-1,1)
+    where
+      m' = M.fromList $ map (first $ second (const 1)) $ M.toList mf
+      mf = M.delete (j,i) $ M.filterWithKey (\k _ -> snd k == i) m
+
+
+
+
 -- | Extracts the diagonal of a 'Tensor' if it is square. The result is a
 -- square 'Tensor' with values only on the diagonal.
 diag :: Tensor a -> Tensor a
@@ -146,16 +186,25 @@ diag (Matrix m (r,c)) | r /= c    = Empty
                       | otherwise = Matrix (go [1..r] M.empty) (r,c)
                       where
                         go [] m' = m'
-                        go (x:xs) m' = case (M.lookup (x,x) m) of
+                        go (x:xs) m' = case M.lookup (x,x) m of
                                          Nothing -> go xs m'
                                          Just v -> go xs (M.insert (x,x) v m')
 diag _ = Empty
 
+-- | Retrieves element at given 'Index'. 
+-- Warning: no bounds check (in purpose).
 at :: (Num a) => Tensor a -> Index -> a
-at (Matrix m (r,c)) (i,j) | i > r     = 0
-                          | j > c     = 0
-                          | otherwise = fromMaybe 0 $ M.lookup (i,j) m
+at (Matrix m _) (i,j) = fromMaybe 0 $ M.lookup (i,j) m
 at Empty _ = 0
+
+-- | Moves a coefficient from the original index to a new one. If a
+-- coefficient is present at the destination index, it is replaced by the new one.
+reindex :: Index -> Index -> Tensor a -> Tensor a
+reindex o n@(ni, nj) t@(Matrix m (i,j)) = 
+    case M.lookup o m of
+      Nothing -> t
+      Just x -> Matrix (M.insert n x (M.delete o m)) (max i ni, max j nj)
+reindex _ _ Empty = Empty
 
 -- | Transposes a 'Tensor'. The conflicting name can be avoided with a 
 -- named import, not necessarily qualified:
@@ -178,6 +227,22 @@ minor (i,j) (Matrix m (r,c)) | i > r     = Empty
            M.filterWithKey (\k _ -> fst k /= i) m
 minor _ _ = Empty
 
+-- | The 'nullifyRow' function sets all coefficients from a row to zero.
+-- If the coefficient is out of bounds the original 'Tensor' is returned.
+nullifyRow :: Int -> Tensor a -> Tensor a
+nullifyRow i t@(Matrix m (r,c)) = 
+    if i > r then t 
+    else Matrix (M.filterWithKey (\k _ -> fst k /= i) m) (r,c)
+nullifyRow _ Empty = Empty
+
+-- | The 'nullifyColumn' function sets all coefficients from a column to zero.
+-- If the coefficient is out of bounds the original 'Tensor' is returned.
+nullifyColumn :: Int -> Tensor a -> Tensor a
+nullifyColumn i t@(Matrix m (r,c)) = 
+    if i > c then t 
+    else Matrix (M.filterWithKey (\k _ -> snd k /= i) m) (r,c)
+nullifyColumn _ Empty = Empty
+
 infixl 7 *.
 -- | Dot product between two 'Tensor's. To keep the function total, a value of 
 -- zero is returned in case of uncompatible dimensions, as it is unlikely
@@ -196,10 +261,28 @@ infixl 7 *.
 norm :: (Floating a, Num a) => Tensor a -> a
 norm v = sqrt $ v *. v
 
-vecProd :: Num a => Tensor a -> Tensor a -> Tensor a
-vecProd m@(Matrix _ (r,1)) n@(Matrix _ (1,c)) = Matrix (M.fromList alist) (r,c)
+-- | Replaces an existing element at given 'Index'. For occasional use only, 
+-- as its speed depends on the size of the 'Tensor'.
+replace :: Tensor a -> Index -> a -> Tensor a
+replace (Matrix m rc) ij x = Matrix (M.insert ij x m) rc
+replace Empty _ _ = Empty
+
+extract :: Index -> Index -> Tensor a -> Tensor a 
+extract (ri,rj) (ci,cj) (Matrix m (r,c)) = Matrix m' (rj-ri+1,cj-ci+1)
     where
-      alist = [((i,j), (m `at` (i,1)) * (n `at` (1,j))) | i <- [1..r], j <- [1..c]]
+      withinBounds index = fst index >= ri && fst index <= rj && 
+                           snd index >= ci && snd index <= cj
+      m' = M.mapKeys (first (+(1-ri))) $ M.mapKeys (second (+(1-ci))) mw
+      mw = M.filterWithKey (\k _ -> withinBounds k) m
+
+vecProd :: Num a => Tensor a -> Tensor a -> Tensor a
+vecProd m@(Matrix _ (r,1)) (Matrix n (1,c)) = Matrix (go [1..c] M.empty) (r,c)
+    where
+      go [] t = t
+      go (i:is) t = go is $ M.union t t'
+          where
+            t' = M.map (*x) $ M.mapKeys (first $ const i) n
+            x = m `at` (i,1)
 vecProd _ _ = Empty
 
 add :: Num a => Tensor a -> Tensor a -> Tensor a
@@ -212,7 +295,7 @@ add _ _ = Empty
 mult :: (Eq a, Num a) => Tensor a -> Tensor a -> Tensor a
 mult m@(Matrix _ (1,c)) n@(Matrix _ (r,1)) 
     | c /= r   = Empty 
-    |otherwise = Matrix (M.singleton (1,1) (m *. n)) (1,1)
+    | otherwise = Matrix (M.singleton (1,1) (m *. n)) (1,1)
 mult m@(Matrix _ (r,1)) n@(Matrix _ (1,c))
     | r /= c    = Empty 
     | otherwise = vecProd m n
@@ -227,7 +310,7 @@ mult _ _ = Empty
 instance (Eq a, Num a) => Num (Tensor a) where
   negate = fmap negate
   abs = fmap abs
-  fromInteger = undefined
+  fromInteger n = Matrix (M.singleton (1,1) $ fromInteger n) (1,1)
   signum = fmap signum
   (+) = add
   (*) = mult
@@ -235,48 +318,50 @@ instance (Eq a, Num a) => Num (Tensor a) where
 infixl 7 *!
 -- | Elementwise multiplication
 (*!) :: Num a => a -> Tensor a -> Tensor a
-(*!) x t = fmap (*x) t
+(*!) x = fmap (*x)
 
 infixl 7 /!
 -- | Elementwise division.
-(/!) :: (Fractional a, Num a) => a -> Tensor a -> Tensor a
-(/!) x t = fmap (/x) t
+(/!) :: (Fractional a, Num a) => Tensor a -> a -> Tensor a
+(/!) t x = fmap (/x) t
 
 infixl 6 +!
 -- | Elementwise addition.
 (+!) :: Num a => a -> Tensor a -> Tensor a
-(+!) x t = fmap (+x) t
+(+!) x = fmap (+x)
 
 infixl 6 -!
 -- | Elementwise substraction.
 (-!) :: Num a => a -> Tensor a -> Tensor a
-(-!) x t = fmap (\y -> y-x) t
+(-!) x = fmap (\y -> y-x)
 
--- | The 'merge' function allows the superposition of two 'Tensors' with 
--- different 'dim'ensions. It is left biased, i.e. the terms in the left 
--- 'Tensor' prevail, unless it is empty.
+-- merge t1 into t1, ie merge left into right
 merge :: Tensor a -> Tensor a -> Tensor a
-merge (Matrix m (rm,cm)) (Matrix n (rn,cn)) = Matrix (m `M.union` n) (max rm rn, max cm cn)
 merge Empty m = m
 merge m Empty = m
+merge (Matrix m (rm,cm)) (Matrix n (rn,cn)) = Matrix (M.union n m) (max rm rn, max cm cn)
 
--- | The 'mergeWith' functions applies the given function when merging two 
--- 'Tensor's. It is obviously useful when building the global stiffness
--- matrix for example.
+mergeAt :: Index -> Tensor a -> Tensor a -> Tensor a
+mergeAt _ Empty m = m
+mergeAt _ m Empty = m
+mergeAt (i,j) (Matrix m (rm,cm)) (Matrix n (rn,cn)) = Matrix (mn) (max rm rn, max cm cn)
+    where
+      mn = M.union (M.mapKeys (first (+(i-1))) $ M.mapKeys (second (+(j-1))) n) m
+      
 mergeWith :: (a -> a -> a) -> Tensor a -> Tensor a -> Tensor a
-mergeWith f (Matrix m (rm,cm)) (Matrix n (rn,cn)) = Matrix (M.unionWith f m n) (max rm rn, max cm cn)
+mergeWith f (Matrix m (rm,cm)) (Matrix n (rn,cn)) = Matrix (M.unionWith f n m) (max rm rn, max cm cn)
 mergeWith _ Empty m = m
 mergeWith _ m Empty = m
 
-
-
--- Symmetric Positive Definite matrix iff:
---    symmetric
---    all the diagonal entries are positive
---    each diagonal entry is greater than the sum of the absolute values of all other entries in the corresponding row/column.
+-- | Checks if 'Tensor' is Symmetric Positive Definite, i.e. 'Tensor' is: 
+-- symmetric /and/
+-- all the diagonal entries are positive /and/
+-- each diagonal entry is greater than the sum of the absolute values of 
+-- all other entries in the corresponding column.
 spd :: (Eq a, Ord a, Num a) => Tensor a -> Bool
 spd m = symmetric m && positive m && definite m
 
+-- | Checks if 'Tensor' is symmetric.
 symmetric :: Eq a => Tensor a -> Bool
 symmetric m = transpose m == m
 
@@ -285,29 +370,30 @@ positive :: (Ord a, Num a) => Tensor a -> Bool
 positive = all (> 0) . diags
 
 diags :: Tensor a -> [a]
-diags = map (\x -> snd x) . toList . diag                 
+diags = map snd . toList . diag                 
 
--- is each diagonal entry greater than the sum of the absolute values of all other entries in the corresponding row/column ?
+-- is each diagonal entry greater than the sum of the absolute values 
+-- of all other entries in the corresponding column ?
+-- test against twice the diagonal term > sum of whole column
 definite :: (Ord a, Num a) => Tensor a -> Bool
-definite m = let ds = diags m
-                 sums = [sum $ map (\x -> abs (snd x)) $ filter (\(k,_) -> fst k /= snd k) $ toList (col c m) | c <- [1..cols m]]
-             in and $ zipWith (>) ds sums
+definite m = let ds = map (*2) $ diags m
+                 sums = [sum $ map (abs . snd) $ toList (col c m) | c <- [1..cols m]]
+             in and $ zipWith (>) ds $ sums
 
--- pb with diagonal to remove before doing the sum
+-- | LU decomposition of a 'Tensor'.
+lu :: (Eq a, Ord a, Num a, Fractional a) => Tensor a -> (Tensor a, Tensor a)
+lu Empty = (Empty, Empty)
+lu t = if not $ isSquare t then (Empty, Empty)
+       else let rt = rows t in lud t [1..rt] rt empty empty
+           
+lud :: (Eq a, Ord a, Num a, Fractional a) => Tensor a -> [Int] -> Int -> Tensor a -> Tensor a -> (Tensor a, Tensor a)
+lud _ [] _ l u = (l,u) 
+lud t (i:is) d l u = let u11 = t `at` (1,1)
+                         u12 = extract (1,1) (2,d) t
+                         l21 = fmap (/u11) $ extract (2,d) (1,1) t
+                         l' = merge (fromInteger 1) l21
+                         u' = merge (fromList [((1,1), u11)]) u12
+                         a22 = extract (2,d) (2,d) t
+                         minorLU = a22 - l21 * u12
+                     in lud minorLU is d (mergeAt (i,i) l' l) (mergeAt (i,i) u' u)
 
-*Numeric.Funfem.Algebra.Tensor> let m = matrix [[1,2],[3,4]]
-*Numeric.Funfem.Algebra.Tensor> definite m
-False
-*Numeric.Funfem.Algebra.Tensor> :i filter
-filter :: (a -> Bool) -> [a] -> [a] 	-- Defined in `GHC.List'
-*Numeric.Funfem.Algebra.Tensor> filter (>0) [-1,1]
-[1]
-*Numeric.Funfem.Algebra.Tensor> toList m
-[((1,1),1),((1,2),2),((2,1),3),((2,2),4)]
-*Numeric.Funfem.Algebra.Tensor> filter (\(k,_) -> fst k /= snd k) $ toList m
-[((1,2),2),((2,1),3)]
-*Numeric.Funfem.Algebra.Tensor> filter (\(k,_) -> fst k /= snd k) $ toList $ col 1 m
-[((2,1),3)]
-*Numeric.Funfem.Algebra.Tensor> map (\x -> abs (snd x)) $ filter (\(k,_) -> fst k /= snd k) $ toList $ col 1 m
-[3]
-*Numeric.Funfem.Algebra.Tensor> 

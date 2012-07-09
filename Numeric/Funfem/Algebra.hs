@@ -4,7 +4,7 @@
 -- Copyright : (c) Adrien Haxaire 2012
 -- Licence : BSD3
 --
--- Maintainer : Adrien Haxaire <adrien@funfem.org>
+-- Maintainer : Adrien Haxaire <adrien@haxaire.org>
 -- Stability : experimental
 -- Portabilty : not tested
 --
