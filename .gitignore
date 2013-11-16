@@ -6,18 +6,10 @@
 # Generated
 *.o
 *.hi
-qc
-QC
 TAGS
-hydraulics
-octave-core
 
 # haddock, hlint
 doc/
 report.html
 dist/
-_darcs/
 
-
-# temporary
-Numeric/Funfem/tmp.hs
