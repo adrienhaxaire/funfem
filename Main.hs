@@ -9,6 +9,6 @@ main :: IO ()
 main = do
   [filename] <- getArgs
   text <- readFile filename
-  print $ importGmsh text
-
+  let (nodes, elements) = importGmsh text
+  print elements
 
