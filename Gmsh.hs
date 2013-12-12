@@ -63,13 +63,18 @@ adaptToDim ns = if all canBeReduced ns
                       canBeReduced (Node _ cs) = last cs == 0.0
                       reduceDim (Node n cs) = Node n (init cs)
 
+tags :: Parser [Int]
+tags = do 
+  num <- int
+  count num $ space >> int
+
 element :: Parser Element
 element = do 
   num <- int
   space
   typ <- int
   space
-  int >> space >> int >> space >> int -- tags
+  tags
   conn <- count (numNodes $ toEnum typ) $ space >> int
   return $ Element (toEnum typ) num conn
 
