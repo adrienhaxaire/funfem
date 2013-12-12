@@ -1,7 +1,6 @@
 module Main where
 
 import System.Environment
-import Text.ParserCombinators.Parsec
 
 import Gmsh
 

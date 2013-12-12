@@ -1,9 +1,7 @@
+{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module Gmsh (importGmsh) where
 
-import System.Environment
 import Text.ParserCombinators.Parsec
---import qualified Data.Text as T
---import Data.Text.Lazy.IO as TIO
 
 import Elements
 
@@ -21,23 +19,20 @@ double = do
              Just s -> read (s:ds)
 
 -- may be used later on for compatibility, etc
-data MeshFormat = MeshFormat {versionNumber :: Double
-                             , fileType :: Int
-                             , dataSize :: Int}
-                  deriving (Show)
+data MeshFormat = MeshFormat Double Int Int deriving (Show)
 
 meshFormatParser :: Parser MeshFormat
 meshFormatParser = do
   string "$MeshFormat"
   newline
-  v <- double 
+  versionNumber <- double 
   space
-  f <- int
+  fileType <- int
   space
-  d <- int
+  dataSize <- int
   newline
   string "$EndMeshFormat"
-  return $ MeshFormat v f d
+  return $ MeshFormat versionNumber fileType dataSize
 
 node :: Parser Node
 node = do
@@ -90,7 +85,7 @@ elementsParser = do
 
 gmshParser :: Parser ([Node], [Element])
 gmshParser = do
-  meshFormat <- meshFormatParser -- do sth with it
+  _ <- meshFormatParser -- do sth with it
   newline
   nodes <- nodesParser
   newline
