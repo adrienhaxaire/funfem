@@ -1,4 +1,4 @@
-module Gmsh where
+module Gmsh (importGmsh) where
 
 import System.Environment
 import Text.ParserCombinators.Parsec
@@ -7,6 +7,20 @@ import Text.ParserCombinators.Parsec
 
 import Elements
 
+int :: Parser Int
+int = do
+  i <- many1 digit
+  return (read i)
+
+double :: Parser Double
+double = do
+  sign <- optionMaybe (char '-')
+  ds <- many1 (digit <|> char '.')
+  return $ case sign of
+             Nothing -> read ds
+             Just s -> read (s:ds)
+
+-- may be used later on for compatibility, etc
 data MeshFormat = MeshFormat {versionNumber :: Double
                              , fileType :: Int
                              , dataSize :: Int}
@@ -16,61 +30,71 @@ meshFormatParser :: Parser MeshFormat
 meshFormatParser = do
   string "$MeshFormat"
   newline
-  v <- anyChar `manyTill` space
-  spaces
-  f <- anyChar `manyTill` space
-  spaces
-  d <- anyChar `manyTill` newline
-  string "$EndMeshFormat"
+  v <- double 
+  space
+  f <- int
+  space
+  d <- int
   newline
-  return $ MeshFormat (read v) (read f) (read d)
+  string "$EndMeshFormat"
+  return $ MeshFormat v f d
+
+node :: Parser Node
+node = do
+  num <- int
+  coors <- count 3 $ space >> double
+  return $ Node num coors
 
 nodesParser :: Parser [Node]
 nodesParser = do
   string "$Nodes"
   newline
-  numNodes <- digit `manyTill` newline
-  nodes <- readNodes (read numNodes)
+  num <- int
+  ns <- count num $ newline >> node
+  newline
   string "$EndNodes"
-  return nodes
-
-readNodes :: Int -> Parser [Node]
-readNodes n = go n []
-    where
-      go 0 ns = return $ reverse ns
-      go n ns = do
-        num <- digit `manyTill` space
-        spaces
-        x <- anyChar `manyTill` space
-        spaces
-        y <- anyChar `manyTill` space
-        spaces
-        z <- anyChar `manyTill` space
-        let node = Node (read num) [(read x), (read y), (read z)]
-        go (n - 1) (node : ns)
+  return ns
 
 adaptToDim :: [Node] -> [Node]
 adaptToDim ns = if all canBeReduced ns 
-                then map reduce ns
+                then map reduceDim ns
                 else ns
                     where
                       canBeReduced (Node _ cs) = last cs == 0.0
-                      reduce (Node n cs) = Node n (init cs)
+                      reduceDim (Node n cs) = Node n (init cs)
 
-gmshParser :: Parser [Node]
+element :: Parser Element
+element = do 
+  num <- int
+  space
+  typ <- int
+  space
+  int >> space >> int >> space >> int -- tags
+  conn <- count (numNodes $ toEnum typ) $ space >> int
+  return $ Element (toEnum typ) num conn
+
+elementsParser :: Parser [Element]
+elementsParser = do
+  string "$Elements"
+  newline
+  num <- int
+  elements <- count num $ newline >> element
+  newline
+  string "$EndElements"
+  return elements
+
+gmshParser :: Parser ([Node], [Element])
 gmshParser = do
   meshFormat <- meshFormatParser -- do sth with it
+  newline
   nodes <- nodesParser
-  return $ adaptToDim nodes
+  newline
+  elements <- elementsParser
+  return (adaptToDim nodes, elements)
 
-importGmsh :: String -> [Node]
+importGmsh :: String -> ([Node], [Element])
 importGmsh text = case parse gmshParser "oops" text of
                     Right r -> r
-                    Left _ -> []
-
-
--- let l = "$MeshFormat\n2.2 0 8\n$EndMeshFormat"
--- parse meshFormatParser "oops" l
-
+                    Left _ -> ([], [])
 
 

@@ -1,6 +1,7 @@
 module Main where
 
 import System.Environment
+import Text.ParserCombinators.Parsec
 
 import Gmsh
 
@@ -8,7 +9,6 @@ main :: IO ()
 main = do
   [filename] <- getArgs
   text <- readFile filename
-  let nodes = importGmsh text
-  print nodes
+  print $ importGmsh text
 
 
