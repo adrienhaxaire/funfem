@@ -1,4 +1,9 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Elements where
+
+import GHC.Generics
+import Data.Binary
 
 data Node = Node {nodeNumber :: Int, coords :: [Double]}
             deriving (Eq, Ord, Show)
@@ -25,7 +30,10 @@ data ElementType = Unsupported
                  | Hex20
                  | Prism15
                  | Pyr13
-                 deriving (Eq, Ord, Show, Enum)
+                 deriving (Eq, Ord, Show, Enum, Generic)
+
+instance Binary ElementType
+
 
 numNodes :: ElementType -> Int
 numNodes et = case et of
@@ -53,9 +61,9 @@ numNodes et = case et of
 data Element = Element { elType :: ElementType
                        , elNum :: Int
                        , elNodes :: [Int]} 
-          deriving (Eq, Ord, Show)
+          deriving (Eq, Ord, Show, Generic)
 
-
+instance Binary Element
 
 
 
