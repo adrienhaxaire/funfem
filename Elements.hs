@@ -1,9 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Elements where
 
 import GHC.Generics
-import Data.Binary
+import Control.Applicative
+import Control.Monad
+import Data.Binary as B
+import Data.Aeson as A
 
 data Node = Node {nodeNumber :: Int, coords :: [Double]}
             deriving (Eq, Ord, Show)
@@ -33,7 +37,8 @@ data ElementType = Unsupported
                  deriving (Eq, Ord, Show, Enum, Generic)
 
 instance Binary ElementType
-
+instance ToJSON ElementType
+instance FromJSON ElementType
 
 numNodes :: ElementType -> Int
 numNodes et = case et of
@@ -65,9 +70,15 @@ data Element = Element { elType :: ElementType
 
 instance Binary Element
 
+instance ToJSON Element where
+    toJSON (Element typ num nodes) = object ["type" .= typ
+                                            , "number" .= num
+                                            , "nodes" .= nodes]
 
-
-
-
-
+instance FromJSON Element where
+    parseJSON (Object v) = Element <$>
+                           v .: "type" <*>
+                           v .: "number" <*>
+                           v .: "nodes"
+    parseJSON _          = mzero
 
