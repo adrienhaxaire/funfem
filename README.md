@@ -1,6 +1,8 @@
 funfem
 ======
 
-funfem is a finite element library written in the functional language Haskell. 
+Funfem is an experiment on writting a finite element library in the functional language Haskell. 
 
-I develop this on my spare time, it is not related to my professional activities.
+I develop this on my spare time, for the fun. It is not related to my professional activities.
+
+
