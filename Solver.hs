@@ -1,42 +1,35 @@
 module Solver where
 
 import qualified Data.Vector.Unboxed as V
--- import Data.Vector.Unboxed (Vector)
-import qualified Data.Vector.Unboxed.Mutable as MV
 
-{-
-lu :: V.Vector (V.Vector Double) -> (V.Vector (V.Vector Double), V.Vector (V.Vector Double))
-lu vvs = go 0 0 vvs m0 m0
+type Vector = V.Vector Double
+type Row = Int
+type Col = Int
+type Size = Int
+type Idx = Int
+
+-- sparse matrices for later optimisation    
+data Matrix = Matrix { matrixData :: Vector
+                     , matrixSize :: Size}
+            deriving (Eq, Ord, Show)
+
+matrix :: Size -> Matrix
+matrix n = Matrix { matrixData = V.replicate n 0
+                  , matrixSize = n}
+
+fromVector :: Vector -> Matrix
+fromVector v = Matrix { matrixData = v
+                      , matrixSize = n}
     where
-      v0 = V.replicate n (0.0 :: Double)
-      m0 = V.replicate n v0
-      n = V.length vvs
-      go i j a l u | i == n = (l, u)
-                   | j == n = go (i + 1) 0 a l u 
-                   | otherwise = go i (j + 1) a l' u' 
-                                 where
-                                   l' = V.modify
+      n = floor . sqrt . fromIntegral . V.length $ v
 
-look at MVector.write, M.modify
-http://stackoverflow.com/questions/21138189/data-vector-modify-creates-vector-copies-on-each-iteration
-
--}
-
-{-
-process :: [Int] -> Vector Int -> Vector Int
-process [] v = v
-process (x:xs) v = process xs $ Vector.modify modify v
-  where
-  modify mv = do
-    old <- MVector.read mv x
-    MVector.write mv x (old + 1)
--}
-
-modif v = do
-  old <- MV.read v 0
-  MV.write v 0 (old + 1)
-
-
-V.modify (\v -> MV.write v 1 2) v1
+idx :: Size -> (Row, Col) -> Int
+idx n (i, j) = n * i + j
+               
+row :: Row -> Matrix -> Vector
+row i m = V.slice (idx n (i,0)) n (matrixData m)
+    where
+      n = matrixSize m
+          
 
 

@@ -6,8 +6,13 @@ import Gmsh
 
 main :: IO ()
 main = do
-  [filename] <- getArgs
-  text <- readFile filename
+  text <- readFile "test.msh"
   let (nodes, elements) = importGmsh text
   print elements
+  
+
+
+--  [filename] <- getArgs
+--  text <- readFile filename
+
 
