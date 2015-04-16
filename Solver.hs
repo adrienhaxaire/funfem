@@ -23,7 +23,7 @@ fromVector v = Matrix { matrixData = v
     where
       n = floor . sqrt . fromIntegral . V.length $ v
 
-idx :: Size -> (Row, Col) -> Int
+idx :: Size -> (Row, Col) -> Idx
 idx n (i, j) = n * i + j
                
 row :: Row -> Matrix -> Vector
