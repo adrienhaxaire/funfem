@@ -24,7 +24,7 @@ cg a b = go r0 p0 u0
                      beta = (r' !. r') / (r !. r)
                      p' = r' + fmap (* beta) p
 
-
+{-
 v1, v2, v3 :: V.Vector Double
 v1 = V.fromList [7,4,6]
 v2 = V.fromList [4,8,4]
@@ -35,6 +35,6 @@ a = fromList [v1, v2, v3]
 
 unitMatrix :: Matrix Double    
 unitMatrix = fromList [V.fromList [1,0,0], V.fromList [0,1,0], V.fromList [0,0,1]]
-
+-}
 
 
