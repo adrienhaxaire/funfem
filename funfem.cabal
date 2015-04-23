@@ -17,7 +17,7 @@ extra-source-files:  README.md
 cabal-version:       >=1.10
 
 library
-  exposed-modules:     Main, Gmsh, Solver, Elements
+  exposed-modules:     Algebra
   -- other-modules:       
   other-extensions:    DeriveGeneric, OverloadedStrings
   build-depends:       base >=4.8 && <4.9, parsec >=3.1 && <3.2, vector >=0.10 && <0.11, binary >=0.7 && <0.8, aeson >=0.8 && <0.9
