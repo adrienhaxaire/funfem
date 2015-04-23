@@ -11,4 +11,4 @@ TAGS
 # haddock, hlint
 dist/
 .cabal-sandbox/
-.cabal.sandbox.config
+cabal.sandbox.config
