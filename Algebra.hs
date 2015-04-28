@@ -7,7 +7,9 @@ instance Num a => Num (V.Vector a) where
    u + v = V.zipWith (+) u v
    u * v = V.zipWith (*) u v
    abs = V.map abs
-    
+   signum _ = undefined
+   fromInteger _ = undefined
+
 data Matrix a = Matrix { rows :: V.Vector (V.Vector a)
                        , rowsInit :: V.Vector Int}
               deriving (Eq, Ord, Show)
