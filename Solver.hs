@@ -24,6 +24,4 @@ cgWithTolerance a b tolerance = go u0 r0 p0
 cg :: Matrix Double -> V.Vector Double -> V.Vector Double
 cg a b = cgWithTolerance a b 1.0e-4
 
-
-
-
+-- TODO: add preconditionned CG and tests for positive definiteness
